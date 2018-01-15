@@ -1,4 +1,4 @@
-#Login-AzureRmAccount
+Login-AzureRmAccount
 
 
 #Getting the name of the subscription
@@ -21,7 +21,7 @@ foreach ($rg in $resourcegroups)
 {
     Write-Host 'Creating Resource Group ' $rg
     Try{
-        New-AzureRmResourceGroup -Name $rg -Location canadaeast
+        New-AzureRmResourceGroup -Name $rg -Location canadaeast 
 }
     Catch{
     Write-host 'Error occured when creating' + $rg
