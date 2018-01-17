@@ -1,0 +1,21 @@
+{
+
+    "if": {
+  
+      "not": {
+  
+        "field": "tags.billto",
+  
+        "match": "####"
+  
+      }
+  
+    },
+  
+    "then": {
+  
+      "effect": "deny"
+  
+    }
+  
+  }
