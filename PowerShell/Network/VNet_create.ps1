@@ -1,4 +1,3 @@
-Select-AzureRmSubscription -SubscriptionId a01ce86a-fe6b-4426-91fe-1696885f35d2
 
 $subscriptionname = "DevTest"
 $location = "canadaeast"
@@ -26,7 +25,26 @@ $cidr_blocks["MidTest"] = "172.20.10.0/23"
 $cidr_blocks["BackTest"] = "172.20.12.0/23"
 
 
-$vnet = New-AzureRmVirtualNetwork -Name $vnet_name -ResourceGroupName $vnet_rg -Location $location -AddressPrefix $vnet_cidr -Subnet $sn -Tag @{Billto=$billto} 
+#Verify if the user is logged into Azure
+Try{
+    Get-AzureRmContext 
+} Catch {
+    if ($_ -like "*Login-AzureRMAccount to login*"){
+        Login-AzureRmAccount
+    }
+}
+
+#Verify the subscription
+Try{
+    Select-AzureRmSubscription -Name $subscriptionname   
+} Catch{
+    Write-Output "Could not find subscription of that name"
+    Exit
+}
+
+
+
+$vnet = New-AzureRmVirtualNetwork -Name $vne/t_name -ResourceGroupName $vnet_rg -Location $location -AddressPrefix $vnet_cidr -Subnet $sn -Tag @{Billto=$billto} 
 
 
 #Creating all Subnet configurations
@@ -40,6 +58,5 @@ $cidr_blocks.Keys | % {
     add-AzureRmVirtualNetworkSubnetConfig -Name $subnetname -AddressPrefix $cidr -NetworkSecurityGroup $nsg -VirtualNetwork $vnet
     $vnet | Set-AzureRmVirtualNetwork
 }
-
 
 

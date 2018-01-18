@@ -1,0 +1,237 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworks_Management_VNet_name": {
+            "defaultValue": "Management-VNet",
+            "type": "String"
+        },
+        "subnets_OZ_name": {
+            "defaultValue": "OZ",
+            "type": "String"
+        },
+        "subnets_NVA_name": {
+            "defaultValue": "NVA",
+            "type": "String"
+        },
+        "subnets_MAZ_name": {
+            "defaultValue": "MAZ",
+            "type": "String"
+        },
+        "subnets_AAD_DS_name": {
+            "defaultValue": "AAD-DS",
+            "type": "String"
+        },
+        "subnets_Gateway_name": {
+            "defaultValue": "Gateway",
+            "type": "String"
+        },
+        "virtualNetworks_Management_VNet_id": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-Management-rg/providers/Microsoft.Network/networkSecurityGroups/gatewaySN-nsg",
+            "type": "String"
+        },
+        "virtualNetworks_Management_VNet_id_1": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/nvaSN-nsg",
+            "type": "String"
+        },
+        "virtualNetworks_Management_VNet_id_2": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/aaddsSN-nsg",
+            "type": "String"
+        },
+        "virtualNetworks_Management_VNet_id_3": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/OZSN-nsg",
+            "type": "String"
+        },
+        "virtualNetworks_Management_VNet_id_4": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/MAZSN-nsg",
+            "type": "String"
+        },
+        "subnets_Gateway_id": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-Management-rg/providers/Microsoft.Network/networkSecurityGroups/gatewaySN-nsg",
+            "type": "String"
+        },
+        "subnets_NVA_id": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/nvaSN-nsg",
+            "type": "String"
+        },
+        "subnets_AAD_DS_id": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/aaddsSN-nsg",
+            "type": "String"
+        },
+        "subnets_OZ_id": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/OZSN-nsg",
+            "type": "String"
+        },
+        "subnets_MAZ_id": {
+            "defaultValue": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/nsg-management-rg/providers/Microsoft.Network/networkSecurityGroups/MAZSN-nsg",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/network-Management-rg/providers/Microsoft.Network/virtualNetworks/Management-VNet'.",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_Management_VNet_name')]",
+            "apiVersion": "2017-06-01",
+            "location": "canadaeast",
+            "tags": {
+                "Billto": "0001"
+            },
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "197d4151-ceea-4fb7-b6c0-11b2d450ceb9",
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "172.20.48.0/21"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "Gateway",
+                        "etag": "W/\"22e23438-fd17-446b-8dc0-94f57c1c56ec\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "172.20.52.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[parameters('virtualNetworks_Management_VNet_id')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "NVA",
+                        "etag": "W/\"22e23438-fd17-446b-8dc0-94f57c1c56ec\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "172.20.48.16/28",
+                            "networkSecurityGroup": {
+                                "id": "[parameters('virtualNetworks_Management_VNet_id_1')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "AAD-DS",
+                        "etag": "W/\"22e23438-fd17-446b-8dc0-94f57c1c56ec\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "172.20.48.0/28",
+                            "networkSecurityGroup": {
+                                "id": "[parameters('virtualNetworks_Management_VNet_id_2')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "OZ",
+                        "etag": "W/\"22e23438-fd17-446b-8dc0-94f57c1c56ec\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "172.20.51.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[parameters('virtualNetworks_Management_VNet_id_3')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "MAZ",
+                        "etag": "W/\"22e23438-fd17-446b-8dc0-94f57c1c56ec\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "172.20.50.0/24",
+                            "networkSecurityGroup": {
+                                "id": "[parameters('virtualNetworks_Management_VNet_id_4')]"
+                            }
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": []
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/network-Management-rg/providers/Microsoft.Network/virtualNetworks/Management-VNet/subnets/Gateway'.",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('virtualNetworks_Management_VNet_name'), '/', parameters('subnets_Gateway_name'))]",
+            "apiVersion": "2017-06-01",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "addressPrefix": "172.20.52.0/24",
+                "networkSecurityGroup": {
+                    "id": "[parameters('subnets_Gateway_id')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Management_VNet_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/network-Management-rg/providers/Microsoft.Network/virtualNetworks/Management-VNet/subnets/NVA'.",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('virtualNetworks_Management_VNet_name'), '/', parameters('subnets_NVA_name'))]",
+            "apiVersion": "2017-06-01",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "addressPrefix": "172.20.48.16/28",
+                "networkSecurityGroup": {
+                    "id": "[parameters('subnets_NVA_id')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Management_VNet_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/network-Management-rg/providers/Microsoft.Network/virtualNetworks/Management-VNet/subnets/AAD-DS'.",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('virtualNetworks_Management_VNet_name'), '/', parameters('subnets_AAD_DS_name'))]",
+            "apiVersion": "2017-06-01",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "addressPrefix": "172.20.48.0/28",
+                "networkSecurityGroup": {
+                    "id": "[parameters('subnets_AAD_DS_id')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Management_VNet_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/network-Management-rg/providers/Microsoft.Network/virtualNetworks/Management-VNet/subnets/OZ'.",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('virtualNetworks_Management_VNet_name'), '/', parameters('subnets_OZ_name'))]",
+            "apiVersion": "2017-06-01",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "addressPrefix": "172.20.51.0/24",
+                "networkSecurityGroup": {
+                    "id": "[parameters('subnets_OZ_id')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Management_VNet_name'))]"
+            ]
+        },
+        {
+            "comments": "Generalized from resource: '/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/network-Management-rg/providers/Microsoft.Network/virtualNetworks/Management-VNet/subnets/MAZ'.",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('virtualNetworks_Management_VNet_name'), '/', parameters('subnets_MAZ_name'))]",
+            "apiVersion": "2017-06-01",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "addressPrefix": "172.20.50.0/24",
+                "networkSecurityGroup": {
+                    "id": "[parameters('subnets_MAZ_id')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_Management_VNet_name'))]"
+            ]
+        }
+    ]
+}
