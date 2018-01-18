@@ -1,5 +1,5 @@
 
-$subscriptionname = "DevTest"
+$subscriptionname = "Management"
 $location = "canadaeast"
 #Setting the billTo PE tag
 $billto = "0001"
@@ -12,27 +12,18 @@ $nsg_rg = 'nsg-'+$subscriptionname+'-rg'
 
 #Define the CIDR Block for the Network and the Subnets
 
-$vnet_cidr = "172.20.0.0/20"
+$vnet_cidr = "172.20.48.0/21"
 $vnet_name = "DevTest-Vnet"
 $sn = @{}
 $cidr_blocks=@{}
 
-$cidr_blocks["FrontDev"] = "172.20.0.0/23"
-$cidr_blocks["MidDev"] = "172.20.2.0/23"
-$cidr_blocks["BackDev"] = "172.20.4.0/23"
-$cidr_blocks["FrontTest"] = "172.20.8.0/23"
-$cidr_blocks["MidTest"] = "172.20.10.0/23"
-$cidr_blocks["BackTest"] = "172.20.12.0/23"
+$cidr_blocks["Gateway"] = "172.20.52.0/24"
+$cidr_blocks["NVA"] = "172.20.48.16/28"
+$cidr_blocks["AAD-DS"] = "172.20.48.0/28"
+$cidr_blocks["OZ"] = "172.20.51.0/24"
+$cidr_blocks["MAZ"] = "172.20.50.0/24"
 
 
-#Verify if the user is logged into Azure
-Try{
-    Get-AzureRmContext 
-} Catch {
-    if ($_ -like "*Login-AzureRMAccount to login*"){
-        Login-AzureRmAccount
-    }
-}
 
 #Verify the subscription
 Try{
