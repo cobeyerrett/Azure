@@ -22,10 +22,11 @@ foreach ($sub in $AzureSub)
     Select-AzureRmSubscription -SubscriptionObject $sub
     
     $subscope = "/subscriptions/" + $sub.Id
-    
+    $assignmentdesc = "This assignment enforces a 4-digit code be added as a tag value for the Billto tag key"
+
     $definition = New-AzureRmPolicyDefinition -Name $policydefname -DisplayName $policydisplayname -description $description -Policy $policyURI -Mode All 
     $definition
-    $assignment = New-AzureRMPolicyAssignment -Name $assignmentname -Scope $subscope -PolicyDefinition $definition 
+    $assignment = New-AzureRMPolicyAssignment -Name $assignmentname -Description $assignmentdesc -Scope $subscope -PolicyDefinition $definition 
     $assignment
     
 }
