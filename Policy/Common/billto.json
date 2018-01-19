@@ -1,5 +1,7 @@
 {
-
+  "properties": {
+    "mode": "indexed"
+      },
     "if": {
   
       "not": {
@@ -14,7 +16,7 @@
   
     "then": {
   
-      "effect": "deny"
+      "effect": "audit"
   
     }
   
