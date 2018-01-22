@@ -1,7 +1,5 @@
 {
-  "properties": {
-    "mode": "indexed"
-      },
+  
     "if": {
   
       "not": {
