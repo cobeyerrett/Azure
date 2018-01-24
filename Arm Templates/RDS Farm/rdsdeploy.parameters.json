@@ -18,7 +18,7 @@
       "value": "cobey.errett"
     },
     "adminPassword": {
-      "value": "[concat('Subscription#',subscription().subscriptionId)]"
+      "value": "!@81999Eng8@!"
     },
     "imageSKU": {
       "value": "2016-Datacenter"
