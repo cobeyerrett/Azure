@@ -1,0 +1,25 @@
+{
+  "Name": "Project Operator",
+  "Id": "1000",
+  "IsCustom": true,
+  "Description": "Project Operator that can manage all scopes of the Project but not access to them.",
+  "Actions": [
+    "Microsoft.Storage/*",
+    "Microsoft.Network/*/read",
+    "Microsoft.Compute/*",
+    "Microsoft.Authorization/*/read",
+    "Microsoft.Resources/subscriptions/resourceGroups/read",
+    "Microsoft.Insights/alertRules/*",
+    "Microsoft.Insights/diagnosticSettings/*",
+    "Microsoft.Support/*"
+  ],
+  "NotActions": [
+    "Microsoft.Network/*/read"  
+
+  ],
+  "AssignableScopes": [
+    "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8",
+    "/subscriptions/7d6cc9f6-cb2d-4e4b-9f53-0ea8b7106d9e",
+    
+  ]
+}
