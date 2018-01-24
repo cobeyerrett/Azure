@@ -3,16 +3,16 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "dnsLabelPrefix": {
-      "value": "cloudstatcan"
+      "value": "cloudstatcan2"
     },
     "adDomainName": {
       "value": "cloud.statcan.ca"
     },
     "adVnetName": {
-      "value": "RDS-Vnet"
+      "value": "Management-Vnet"
     },
     "adSubnetName": {
-      "value": "RDS"
+      "value": "OZ"
     },
     "adminUsername": {
       "value": "cobey.errett"
