@@ -14,6 +14,9 @@
     "adSubnetName": {
       "value": "OZ"
     },
+    "adVnetRG": {
+      "value": "network-Management-rg"
+    },
     "adminUsername": {
       "value": "cobey.errett"
     },

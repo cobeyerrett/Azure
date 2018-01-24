@@ -29,6 +29,13 @@
       },
       "defaultValue": "[concat('ADStaticSubnet',resourceGroup().name)]"
     },
+    "adVnetRG": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource group that contains the Vnet"
+      },
+      "defaultValue": "network-Management-rg"
+    },
     "adminUsername": {
       "type": "string",
       "metadata": {
@@ -93,7 +100,7 @@
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
     "dnsServerPrivateIp": "10.0.0.4",
-    "subnet-id": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
+    "subnet-id": "[concat(resourceId(parameters('adVnetRG'),'Microsoft.Network/virtualNetworks',parameters('adVnetName')),'/subnets/',parameters('adSubnetName'))]",
     "publicIpRef": "publicIp",
     "brokerIpRef": "brokerpublicIp",
     "gatewayIpRef": "gatewaypublicIp",
