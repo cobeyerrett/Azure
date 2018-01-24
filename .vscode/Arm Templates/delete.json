@@ -1,0 +1,76 @@
+{
+    "authorization": {
+        "action": "Microsoft.Resources/deployments/write",
+        "scope": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourcegroups/RDS-Management-rg/deployments/Microsoft.Template"
+    },
+    "caller": "cobey.errett@054gc.onmicrosoft.com",
+    "channels": "Operation",
+    "claims": {
+        "aud": "https://management.core.windows.net/",
+        "iss": "https://sts.windows.net/258f1f99-ee3d-42c7-bfc5-7af1b2343e02/",
+        "iat": "1516727333",
+        "nbf": "1516727333",
+        "exp": "1516731233",
+        "http://schemas.microsoft.com/claims/authnclassreference": "1",
+        "aio": "ASQA2/8GAAAAnsooG/p6Yfi3MpjODQ1zT46rsl5CqxLHy6WTE7JILzU=",
+        "http://schemas.microsoft.com/claims/authnmethodsreferences": "pwd",
+        "appid": "c44b4083-3bb0-49c1-b47d-974e53cbdf3c",
+        "appidacr": "2",
+        "e_exp": "262800",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname": "Errett",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname": "Cobey",
+        "groups": "d3cb13ba-0e4d-4717-b476-72df346eb72a,b3c8d092-a0c0-42fe-b42e-e7aa0cc6e288,d543d2b7-0989-49ba-bb95-454515d3c027",
+        "ipaddr": "142.206.2.21",
+        "name": "Cobey Errett",
+        "http://schemas.microsoft.com/identity/claims/objectidentifier": "cb7dd612-f7db-4690-936a-2c77addefe26",
+        "puid": "10037FFEA6FD16DB",
+        "http://schemas.microsoft.com/identity/claims/scope": "user_impersonation",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": "BlUJA_zG03Vja-CdBkq18Jt4T2x88Y3hIgA2NxD1UoU",
+        "http://schemas.microsoft.com/identity/claims/tenantid": "258f1f99-ee3d-42c7-bfc5-7af1b2343e02",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "cobey.errett@054gc.onmicrosoft.com",
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/upn": "cobey.errett@054gc.onmicrosoft.com",
+        "uti": "SJkGTHsvf0GXAI8Whx5GAA",
+        "ver": "1.0",
+        "wids": "62e90394-69f5-4237-9190-012177145e10"
+    },
+    "correlationId": "3972875c-1d6b-4cd0-93c9-d9dd903ca527",
+    "description": "",
+    "eventDataId": "db44899c-1223-4c9a-a66c-dfbbe91ab600",
+    "eventName": {
+        "value": "EndRequest",
+        "localizedValue": "End request"
+    },
+    "category": {
+        "value": "Administrative",
+        "localizedValue": "Administrative"
+    },
+    "eventTimestamp": "2018-01-23T17:23:41.9315002Z",
+    "id": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourcegroups/RDS-Management-rg/deployments/Microsoft.Template/events/db44899c-1223-4c9a-a66c-dfbbe91ab600/ticks/636523250219315002",
+    "level": "Error",
+    "operationId": "9c196c18-5354-4963-bd8a-275e3f6e6a10",
+    "operationName": {
+        "value": "Microsoft.Resources/deployments/write",
+        "localizedValue": "Microsoft.Resources/deployments/write"
+    },
+    "resourceGroupName": "RDS-Management-rg",
+    "resourceProviderName": {
+        "value": "Microsoft.Resources",
+        "localizedValue": "Microsoft Resources"
+    },
+    "resourceType": {
+        "value": "Microsoft.Resources/deployments",
+        "localizedValue": "Microsoft.Resources/deployments"
+    },
+    "resourceId": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourcegroups/RDS-Management-rg/deployments/Microsoft.Template",
+    "status": {
+        "value": "Failed",
+        "localizedValue": "Failed"
+    },
+    "subStatus": {
+        "value": "",
+        "localizedValue": ""
+    },
+    "submissionTimestamp": "2018-01-23T17:24:00.0580655Z",
+    "subscriptionId": "b73ce7d3-fd70-4018-9bc6-5d160c574707",
+    "relatedEvents": []
+}

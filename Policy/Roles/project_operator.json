@@ -14,8 +14,8 @@
     "Microsoft.Support/*"
   ],
   "NotActions": [
-    "Microsoft.Network/*/read"  
-
+    "Microsoft.Network/*/write",
+    "Microsoft.Network/*/delete"
   ],
   "AssignableScopes": [
     "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8",
