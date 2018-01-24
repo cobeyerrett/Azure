@@ -1,6 +1,5 @@
 {
   "Name": "Project Operator",
-  "Id": "1000",
   "IsCustom": true,
   "Description": "Project Operator that can manage all scopes of the Project but not access to them.",
   "Actions": [
@@ -15,7 +14,8 @@
   ],
   "NotActions": [
     "Microsoft.Network/*/write",
-    "Microsoft.Network/*/delete"
+    "Microsoft.Network/*/delete",
+    "Microsoft.Network/*"
   ],
   "AssignableScopes": [
     "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8",
