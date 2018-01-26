@@ -1,4 +1,5 @@
 
+$rg_name = read-host -Prompt "Enter the "
 
 Select-AzureRmSubscription -SubscriptionName "Management"
 
