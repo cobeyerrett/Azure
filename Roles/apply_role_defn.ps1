@@ -28,7 +28,7 @@ do{
         '1'{
             try {
                 $role_definition_file = read-host -prompt "Enter the JSON file with the role definition"
-                Set-AzureRmRoleDefinition -InputFile "./policy/$role_definition_file"
+                Set-AzureRmRoleDefinition -InputFile $role_definition_file
             }
             catch {
                 Write-host -ForegroundColor Red "File not found or incorrect ID specified in JSON. Please check your JSON file"
@@ -39,7 +39,7 @@ do{
         '2'{
             Clear-Host
             $role_definition_file = read-host -prompt "Enter the JSON file with the role definition"
-            New-AzureRmRoleDefinition -InputFile "./policy/$role_definition_file"
+            New-AzureRmRoleDefinition -InputFile "$role_definition_file"
         }
         '3'{
             Get-AzureRmRoleDefinition | where-object {$_.IsCustom -eq $true} | Select Name, Description, Actions, NotActions | Out-GridView
@@ -64,7 +64,7 @@ do{
             try {
                 $roleName = Read-Host -Prompt "Enter the role you want to get JSON file"
                   
-                Get-AzureRmRoleDefinition $roleName | ConvertTo-Json | out-file "./policy/$rolename.json"
+                Get-AzureRmRoleDefinition $roleName | ConvertTo-Json | out-file "$rolename.json"
             }
             catch {
                 Write-host -ForegroundColor Red "Could not find role name"

@@ -1,5 +1,61 @@
+Param(
+    [Parameter(Mandatory=$true)]   
+    [string]$subscription,
+    [Parameter(Mandatory=$true)]   
+    [string]$projectName,
+    [Parameter(Mandatory=$true)]   
+    [string]$projectOwner,
+    [Parameter(Mandatory=$true)]   
+    [string]$ad_group,
+    [Parameter(Mandatory=$true)]   
+    [string]$pe,
+    [string]$location="canadaeast"
+  
+)
 
-$subscription = read-host -Prompt "Enter the subscription to place the resource group"
+#Defines the Resource Group Name 
+$rg_name = "$projectName-$subscription-rg"
+
+function Check-ResourceGroup
+{        
+        [CmdletBinding()]
+        [OutputType([bool])]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $ResourceGroupName,
+        [string]
+        $Location,
+        [bool]
+        $add = $false
+    )
+    $ResourceGroups = Get-AzureRmResourceGroup 
+
+    $MatchRgLocation = $ResourceGroups | where { $_.Location -like $Location} | 
+                        where {$_.ResourceGroupName -like $ResourceGroupName} 
+    if ($MatchRgLocation.Count -eq 0) { 
+
+            $MatchRgLocation = $ResourceGroups | 
+                        where {$_.ResourceGroupName -like $ResourceGroupName} 
+        if ($MatchRgLocation.Count -eq 0)  {
+            Write-Verbose "$ResourceGroupName does not exist" 
+            return $false
+
+        } else {
+            Write-Verbose "$ResourceGroupName exists in alternative location" 
+            return $false
+        }
+    } else {
+    if ($add)  { 
+            Write-Verbose "$ResourceGroupName exists in location -Add is set to $true" 
+            return $true
+        } else {
+            Write-Verbose "$ResourceGroupName exists in location -Add is not set" 
+            return $false 
+        }
+    } 
+}
 
 try {
     $sub = Get-AzureRmSubscription -SubscriptionName $subscription -ErrorAction Stop   
@@ -7,27 +63,31 @@ try {
 }
 catch {
     Write-Host "No Such Subscription found" -ForegroundColor Yellow
+    exit
 }
 
+#Check if resource exists
+Check-ResourceGroup -ResourceGroupName $rg_name -Location $location -Verbose
 
-$rg_name = read-Host -Prompt "Enter the resource group name" 
-$pe = read-host -Prompt "Enter the PE for the resource group"
 
-$ad_group = read-host -Prompt "Enter the AAD group name"
 
-if ((Get-AzureRmADGroup -SearchString $ad_group) -eq $null)
+
+
+Get-AzureRmResourceGroup -Name $rg_name -ev notPresent -ea 0 
+
+if ($notPresent)
 {
-    Write-Host "No Such AD Group Found" -ForegroundColor Red
-    Break
+    # ResourceGroup doesn't exist
 }
 else
 {
-    $ad_objid = Get-AzureRmADGroup -SearchString $ad_group
+    # ResourceGroup exist
 }
 
 
+
 #Creates the resource group in the Canadian Data Centre
-$rg = New-AzureRmResourceGroup -Name $rg_name -Location "canadaeast" -Tag @{Billto=$pe}
+$rg = New-AzureRmResourceGroup -Name $rg_name -Location $location -Tag @{Billto=$pe;ProjectName=$projectName;ProjectOwner=$projectOwner}
 
 #adds group to the contributor role within the Resource Group
 New-AzureRmRoleAssignment -ObjectId $ad_objid.Id -ResourceGroupName $rg.ResourceGroupName -RoleDefinitionName Contributor

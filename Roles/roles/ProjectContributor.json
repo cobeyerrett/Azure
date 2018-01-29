@@ -1,0 +1,21 @@
+{
+    "Name":  "ProjectContributor",
+    "Id":  "null",
+    "IsCustom":  true,
+    "Description":  "Project Contributor role. With the exception of Network resources",
+    "Actions":  [
+                    "*"
+                ],
+    "NotActions":  [
+                       "*/delete",
+                       "Microsoft.Network/*/write",
+                       "Microsoft.Authorization/*/Write",
+                       "Microsoft.Authorization/elevateAccess/Action"
+                   ],
+    "AssignableScopes":  [
+                             "/subscriptions/a01ce86a-fe6b-4426-91fe-1696885f35d2",
+                             "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707",
+                             "/subscriptions/7d6cc9f6-cb2d-4e4b-9f53-0ea8b7106d9e",
+                             "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8"
+                         ]
+}
