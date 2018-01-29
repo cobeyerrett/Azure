@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dnsLabelPrefix": {
+      "value": "cloudstatcan2"
+    },
+    "adDomainName": {
+      "value": "cloud.statcan.ca"
+    },
+    "adVnetName": {
+      "value": "Management-Vnet"
+    },
+    "adSubnetName": {
+      "value": "OZ"
+    },
+    "adVnetRG": {
+      "value": "network-Management-rg"
+    },
+    "adminUsername": {
+      "value": "cobey.errett"
+    },
+    "adminPassword": {
+      "value": ""
+    },
+    "imageSKU": {
+      "value": "2016-Datacenter"
+    },
+    "numberOfRdshInstances": {
+      "value": 1
+    },
+    "rdshVmSize": {
+      "value": "Standard_A4"
+    }
+  }
+}
