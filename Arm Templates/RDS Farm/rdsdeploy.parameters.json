@@ -12,7 +12,7 @@
       "value": "Management-Vnet"
     },
     "adSubnetName": {
-      "value": "OZ"
+      "value": "subnetname"
     },
     "adVnetRG": {
       "value": "network-Management-rg"
