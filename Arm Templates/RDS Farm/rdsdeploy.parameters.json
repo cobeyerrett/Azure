@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "dnsLabelPrefix": {
-      "value": "cloudstatcan2"
+      "value": "dnsprefix"
     },
     "adDomainName": {
-      "value": "cloud.statcan.ca"
+      "value": "contoso.com"
     },
     "adVnetName": {
       "value": "Management-Vnet"
@@ -18,7 +18,7 @@
       "value": "network-Management-rg"
     },
     "adminUsername": {
-      "value": "cobey.errett"
+      "value": "admin"
     },
     "adminPassword": {
       "value": ""
