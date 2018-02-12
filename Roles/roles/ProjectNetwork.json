@@ -1,0 +1,23 @@
+{
+    "Name":  "ProjectNetwork",
+    "Id":  "null",
+    "IsCustom":  false,
+    "Description":  "Lets Projects add resource to networks and NSGs.",
+    "Actions":  [
+        "Microsoft.Network/networkSecurityGroups/join/action",
+        "Microsoft.Network/networkSecurityGroups/read",
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
+
+
+
+                ],
+    "NotActions":  [
+
+                   ],
+    "AssignableScopes":  [
+        "/subscriptions/a01ce86a-fe6b-4426-91fe-1696885f35d2",
+        "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707",
+        "/subscriptions/7d6cc9f6-cb2d-4e4b-9f53-0ea8b7106d9e",
+        "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8"
+                         ]
+}

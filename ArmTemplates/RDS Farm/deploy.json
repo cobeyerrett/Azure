@@ -12,29 +12,25 @@
       "type": "string",
       "metadata": {
         "description": "The name of the AD domain. For example contoso.com"
-      },
-      "defaultValue": "contoso.com"
+      }
     },
     "adVnetName": {
       "type": "string",
       "metadata": {
         "description": "The vnet name of AD domain. For example johnvnet1"
-      },
-      "defaultValue": "[concat('ADVNET',resourceGroup().name)]"
+      }
     },
     "adSubnetName": {
       "type": "string",
       "metadata": {
         "description": "The subnet name of AD domain. For example johnsubnet1"
       },
-      "defaultValue": "[concat('ADStaticSubnet',resourceGroup().name)]"
     },
     "adVnetRG": {
       "type": "string",
       "metadata": {
         "description": "The resource group that contains the Vnet"
       },
-      "defaultValue": "network-Management-rg"
     },
     "adminUsername": {
       "type": "string",
@@ -47,8 +43,7 @@
       "type": "securestring",
       "metadata": {
         "description": "The password for the administrator account of the new VM and the domain"
-      },
-      "defaultValue": "[concat('Subscription#',subscription().subscriptionId)]"
+      }
     },
     "imageSKU": {
       "type": "string",

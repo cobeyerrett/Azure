@@ -1,0 +1,23 @@
+{
+    "if": {
+      "allof": [
+        {
+          "field": "tags",
+          "exists": "true"
+        },
+        {
+          "field": "tags.billto",
+          "exists": "false"
+        }
+        ]
+    },
+    "then": {
+      "effect": "append",
+      "details": [
+        {
+          "field": "tags.owner",
+          "value": "Daniel"
+        }
+      ]
+    }
+  }
