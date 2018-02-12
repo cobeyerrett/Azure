@@ -19,7 +19,7 @@ $sub = "Management"
 $defn_file = ".\rg_billto.json"
 $param_file = ".\rg_billto.parameters.json"
 $pol_name = "Enforce-resourcegroup-tags"
-$dis_name = "Enforce tag and its value on resource groups"
+$dis_name = "This policy enforces that all resource groups created have a 4 digit PE code."
 
 try {
     Test-Path $defn_file

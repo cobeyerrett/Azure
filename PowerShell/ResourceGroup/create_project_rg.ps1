@@ -44,16 +44,18 @@ function create-resourceGroup
     #sets parameters for the Policy
     $param = @{"tagName"="billto";"tagValue"=$pe.ToString()}
 
+    #Geta the Apply Tag Builtin Policy
+    $policy = Get-AzureRmPolicyDefinition -Id /providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498
+    #Applies the policy to the resource group
+    New-AzureRmPolicyAssignment -Name BilltoApply -Scope $rg.ResourceId -PolicyDefinition $policy -PolicyParameterObject $param
+    
     #Gets the Enforce Tag Builtin Policy
     $policy = Get-AzureRmPolicyDefinition -Id /providers/Microsoft.Authorization/policyDefinitions/1e30110a-5ceb-460c-a204-c1c3969c6d62 
 
     #Applies the policy to the resource group
     New-AzureRmPolicyAssignment -Name BilltoEnforce -Scope $rg.ResourceId -PolicyDefinition $policy -PolicyParameterObject $param
 
-    #Geta the Apply Tag Builtin Policy
-    $policy = Get-AzureRmPolicyDefinition -Id /providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498
-    #Applies the policy to the resource group
-    New-AzureRmPolicyAssignment -Name BilltoEnforce -Scope $rg.ResourceId -PolicyDefinition $policy -PolicyParameterObject $param
+    
 }
 
 
