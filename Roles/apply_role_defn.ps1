@@ -28,7 +28,7 @@ do{
         '1'{
             try {
                 $role_definition_file = read-host -prompt "Enter the JSON file with the role definition"
-                Set-AzureRmRoleDefinition -InputFile $role_definition_file
+                Set-AzureRmRoleDefinition -InputFile "./roles/$role_definition_file"
             }
             catch {
                 Write-host -ForegroundColor Red "File not found or incorrect ID specified in JSON. Please check your JSON file"
@@ -64,7 +64,7 @@ do{
             try {
                 $roleName = Read-Host -Prompt "Enter the role you want to get JSON file"
                   
-                Get-AzureRmRoleDefinition $roleName | ConvertTo-Json | out-file "$rolename.json"
+                Get-AzureRmRoleDefinition $roleName | ConvertTo-Json | out-file "./roles/$rolename.json"
             }
             catch {
                 Write-host -ForegroundColor Red "Could not find role name"
