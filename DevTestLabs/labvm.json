@@ -1,0 +1,151 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "newVMName": {
+      "type": "string",
+      "defaultValue": "cobey-ws"
+    },
+    "labName": {
+      "type": "string",
+      "defaultValue": "CloudTeam"
+    },
+    "size": {
+      "type": "string",
+      "defaultValue": "Standard_D2s_v3"
+    },
+    "userName": {
+      "type": "string",
+      "defaultValue": "errecob"
+    },
+    "password": {
+      "type": "securestring"
+    },
+    "Join_Active_Directory_(AD)_domain_domainAdminUsername": {
+      "type": "string",
+      "defaultValue": "cloud.statcan.ca\\cobey.errett"
+    },
+    "Join_Active_Directory_(AD)_domain_domainAdminPassword": {
+      "type": "securestring"
+    },
+    "Join_Active_Directory_(AD)_domain_domainToJoin": {
+      "type": "string",
+      "defaultValue": "cloud.statcan.ca"
+    },
+    "Join_Active_Directory_(AD)_domain_ouPath": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "Clone_a_git_repository_GitRepoURI": {
+      "type": "string",
+      "defaultValue": "https://github.com/cobeyerrett/Azure.git"
+    },
+    "Clone_a_git_repository_Destination": {
+      "type": "string",
+      "defaultValue": "C:\\Repos"
+    },
+    "Clone_a_git_repository_Branch": {
+      "type": "string",
+      "defaultValue": "master"
+    },
+    "Clone_a_git_repository_PersonalAccessToken": {
+      "type": "securestring"
+    }
+  },
+  "variables": {
+    "labSubnetName": "Operator",
+    "labVirtualNetworkId": "[resourceId('Microsoft.DevTestLab/labs/virtualnetworks', parameters('labName'), variables('labVirtualNetworkName'))]",
+    "labVirtualNetworkName": "DevWS-VNet",
+    "vmId": "[resourceId ('Microsoft.DevTestLab/labs/virtualmachines', parameters('labName'), parameters('newVMName'))]",
+    "vmName": "[concat(parameters('labName'), '/', parameters('newVMName'))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-04-26-preview",
+      "type": "Microsoft.DevTestLab/labs/virtualmachines",
+      "name": "[variables('vmName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "labVirtualNetworkId": "[variables('labVirtualNetworkId')]",
+        "notes": "Windows 10 Pro, Version 1709",
+        "galleryImageReference": {
+          "offer": "Windows-10",
+          "publisher": "MicrosoftWindowsDesktop",
+          "sku": "RS3-Pro",
+          "osType": "Windows",
+          "version": "latest"
+        },
+        "size": "[parameters('size')]",
+        "userName": "[parameters('userName')]",
+        "password": "[parameters('password')]",
+        "isAuthenticationWithSshKey": false,
+        "artifacts": [
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo324', 'windows-domain-join-new')]",
+            "parameters": [
+              {
+                "name": "domainAdminUsername",
+                "value": "[parameters('Join_Active_Directory_(AD)_domain_domainAdminUsername')]"
+              },
+              {
+                "name": "domainAdminPassword",
+                "value": "[parameters('Join_Active_Directory_(AD)_domain_domainAdminPassword')]"
+              },
+              {
+                "name": "domainToJoin",
+                "value": "[parameters('Join_Active_Directory_(AD)_domain_domainToJoin')]"
+              },
+              {
+                "name": "ouPath",
+                "value": "[parameters('Join_Active_Directory_(AD)_domain_ouPath')]"
+              }
+            ]
+          },
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo324', 'windows-docker')]"
+          },
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo324', 'windows-git')]"
+          },
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo324', 'windows-clone-git-repo')]",
+            "parameters": [
+              {
+                "name": "GitRepoURI",
+                "value": "[parameters('Clone_a_git_repository_GitRepoURI')]"
+              },
+              {
+                "name": "Destination",
+                "value": "[parameters('Clone_a_git_repository_Destination')]"
+              },
+              {
+                "name": "Branch",
+                "value": "[parameters('Clone_a_git_repository_Branch')]"
+              },
+              {
+                "name": "PersonalAccessToken",
+                "value": "[parameters('Clone_a_git_repository_PersonalAccessToken')]"
+              }
+            ]
+          },
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo324', 'windows-putty')]"
+          },
+          {
+            "artifactId": "[resourceId('Microsoft.DevTestLab/labs/artifactSources/artifacts', parameters('labName'), 'privaterepo324', 'windows-remote-desktop-connection-manager')]"
+          }
+        ],
+        "labSubnetName": "[variables('labSubnetName')]",
+        "disallowPublicIpAddress": true,
+        "storageType": "Standard",
+        "allowClaim": false
+      }
+    }
+  ],
+  "outputs": {
+    "labVMId": {
+      "type": "string",
+      "value": "[variables('vmId')]"
+    }
+  }
+}
