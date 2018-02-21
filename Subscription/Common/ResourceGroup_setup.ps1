@@ -1,54 +1,96 @@
-#Login-AzureRmAccount
+Param(
+    [Parameter(Mandatory=$true)]   
+    [string]$subscription,
+    [Parameter(Mandatory=$true)]   
+    [string]$projectName,
+    [Parameter(Mandatory=$true)]   
+    [string]$projectOwner,
+    [Parameter(Mandatory=$true)]   
+    [string]$pe,
+    [string]$location="canadaeast"
+    )
 
-$location = "canadaeast"
-$notallowed_definition = Get-AzureRmPolicyDefinition -Id '/providers/Microsoft.Authorization/policyDefinitions/6c112d4e-5bc7-47ae-a041-ea2d9dccd749'
+function get-ResourceGroup
+{        
+        [CmdletBinding()]
+        [OutputType([bool])]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $ResourceGroupName,
+        [string]
+        $Location,
+        [bool]
+        $add = $false
+    )
+    $ResourceGroups = Get-AzureRmResourceGroup 
 
+    $MatchRgLocation = $ResourceGroups | where { $_.Location -like $Location} | 
+                        where {$_.ResourceGroupName -like $ResourceGroupName} 
+    if ($MatchRgLocation.Count -eq 0) { 
 
-#Getting the name of the subscription
-$subname = Read-Host -Prompt "Enter the name of the Subscription"
+            $MatchRgLocation = $ResourceGroups | 
+                        where {$_.ResourceGroupName -like $ResourceGroupName} 
+        if ($MatchRgLocation.Count -eq 0)  {
+            Write-Verbose "$ResourceGroupName does not exist" 
+            return $false
 
-#Selecting the Azure Subscription
-try {
-    $subscription = Get-AzureRmSubscription -SubscriptionName $subname    
-    Select-AzureRmSubscription -SubscriptionObject $subscription
-    $subscope = "/subscriptions/$subscription"
+        } else {
+            Write-Verbose "$ResourceGroupName exists in alternative location" 
+            return $false
+        }
+    } else {
+            Write-Verbose "$ResourceGroupName exists in location" 
+            return $true
+        
+    } 
 }
-catch {
-    Write-Host "Could not find subscription"
-    Exit    
-}
 
 
+ 
+    
+    #Defines the Resource Group Name 
+    $num = 1
+    
 
-#Creating Base Resource Groups in the selected subscription
-Write-Host 'Creating Network Resource Group ' 
-    $rg = "network-$subname-rg"
-    New-AzureRmResourceGroup -Name $rg -Location $location 
-    New-AzureRmResourceLock -LockLevel CanNotDelete -ResourceGroupName $rg -LockName "Cannot delete $rg resources" -Force 
-   # New-AzureRMPolicyAssignment -Name "Limit VNet creation - $subname" -Scope $subscope -NotScope "$subscope/resourceGroups/$rg" -PolicyDefinition $notallowed_definition -PolicyParameterObject @{"listOfResourceTypesNotAllowed"=@('Microsoft.Network/virtualnetwork')} 
+    try {
+        $sub = Get-AzureRmSubscription -SubscriptionName $subscription -ErrorAction Stop   
+        Set-AzureRmContext -Subscription $sub -ErrorAction Stop
+    }
+    catch {
+        Write-Host "No Such Subscription found" -ForegroundColor Yellow
+        exit
+    }
+    
+    $created = $false    
 
-Write-Host 'Creating Public IP Resource Group ' 
-Try
-{
-    $rg = "publicIP-$subname-rg"
-    New-AzureRmResourceGroup -Name $rg -Location $location 
-    New-AzureRmResourceLock -LockLevel CanNotDelete -ResourceGroupName $rg -LockName "Cannot delete $rg resources" -Force 
-}
-Catch
-{
-    Write-host 'Error occured when creating' + $rg
-}
-Write-Host 'Creating NSG Resource Group ' 
-Try
-{
-    $rg = "nsg-$subname-rg"
-    New-AzureRmResourceGroup -Name $rg -Location $location 
-    New-AzureRmResourceLock -LockLevel CanNotDelete -ResourceGroupName $rg -LockName "Cannot delete $rg resources" -Force 
-}
-Catch
-{
-    Write-host 'Error occured when creating' + $rg
-}
-   
+    while (!$created) {
+        $rg_name = "$projectName$num-$subscription-rg"
+        if (!(get-ResourceGroup -ResourceGroupName $rg_name -Location $location)) {
+            Write-Host -ForegroundColor Yellow "The RG does not exist.  Creating"
+            #creates new resource group 
+            $rg = New-AzureRmResourceGroup -Name $rg_name -Location $location -Tag @{Billto=$pe;ProjectName=$projectName;ProjectOwner=$projectOwner}
+            $created = $true
+        }
+        else {
+            Write-Host -ForegroundColor Yellow "The RG $rg_name exists"
+            $num+=1
+        }
+    }
+    #sets parameters for the Policy
+    $param = @{"tagName"="billto";"tagValue"=$pe.ToString()}
 
+    #Geta the Apply Tag Builtin Policy
+    $policy = Get-AzureRmPolicyDefinition -Id /providers/Microsoft.Authorization/policyDefinitions/2a0e14a6-b0a6-4fab-991a-187a4f81c498
+    #Applies the policy to the resource group
+    New-AzureRmPolicyAssignment -Name BilltoApply -Scope $rg.ResourceId -PolicyDefinition $policy -PolicyParameterObject $param
+    
+    #Gets the Enforce Tag Builtin Policy
+    $policy = Get-AzureRmPolicyDefinition -Id /providers/Microsoft.Authorization/policyDefinitions/1e30110a-5ceb-460c-a204-c1c3969c6d62 
+
+    #Applies the policy to the resource group
+    New-AzureRmPolicyAssignment -Name BilltoEnforce -Scope $rg.ResourceId -PolicyDefinition $policy -PolicyParameterObject $param
+
+    
 
