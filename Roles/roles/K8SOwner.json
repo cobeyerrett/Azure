@@ -1,0 +1,21 @@
+{
+    "Name":  "K8SOwner",
+    "Id":  "null",
+    "IsCustom":  true,
+    "Description":  "Lets you manage everything, including access to resources. With the exception of Network resources",
+    "Actions":  [
+                    "*"
+                ],
+    "NotActions":  [
+                       "Microsoft.Network/*/delete",
+                       "Microsoft.Network/virtualNetworks/*",
+                       "Microsoft.Network/networkSecurityGroups/*"
+                   ],
+    "AssignableScopes":  [
+                             "/subscriptions/a01ce86a-fe6b-4426-91fe-1696885f35d2",
+                             "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707",
+                             "/subscriptions/7d6cc9f6-cb2d-4e4b-9f53-0ea8b7106d9e",
+                             "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8",
+                             "/subscriptions/2c694414-1af6-45ba-82ba-edb9acf344b0"
+                         ]
+}
