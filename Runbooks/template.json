@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2017-06-01",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "networkSecurityGroupName",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": []
+            }
+        }
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "VM_NAME/DSCScript1",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "VM_NAME/DSCScript1"
+            },
+            "dependsOn": [
+                "Microsoft.Compute/virtualMachines/VM_NAME"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.9",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "modulesUrl": "[concat(parameters('_artifactsLocation'), '/DSCModules/${dsc.zip}')]",
+                    "sasToken": "[parameters('_artifactsLocationSasToken')]",
+                    "configurationFunction": "CONFIGURATION_FUNCTION",
+                    "properties": {
+                        "nodeName": "VM_NAME"
+                    }
+                },
+                "protectedSettings": {}
+            }
+        }
+    ],
+    "outputs": {}
+}
