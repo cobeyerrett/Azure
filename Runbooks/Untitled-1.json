@@ -1,0 +1,49 @@
+{
+    "headers": {
+        "Connection": "Keep-Alive",
+        "Expect": "100-continue",
+        "Host": "prod-28.canadacentral.logic.azure.com",
+        "User-Agent": "IcMBroadcaster/1.0",
+        "X-CorrelationContext": "RkkKACgAAAACAAAAEACysUvNo/MRToqBTmlUr7NJAQAQADCZPrV7h19Ar+7xOWR3SR4=",
+        "Content-Length": "2289",
+        "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+        "schemaId": "Microsoft.Insights/activityLogs",
+        "data": {
+            "status": "Activated",
+            "context": {
+                "activityLog": {
+                    "authorization": {
+                        "action": "Microsoft.Resources/subscriptions/resourcegroups/write",
+                        "scope": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourcegroups/CobeyDelete36-Management-rg"
+                    },
+                    "channels": "Operation",
+                    "claims": "{\"aud\":\"https://management.core.windows.net/\",\"iss\":\"https://sts.windows.net/258f1f99-ee3d-42c7-bfc5-7af1b2343e02/\",\"iat\":\"1519387199\",\"nbf\":\"1519387199\",\"exp\":\"1519391099\",\"aio\":\"Y2NgYLj23PJPq0a64KRvAureByzsAA==\",\"appid\":\"50c08134-2c98-4b97-8c52-7f5fd83235e3\",\"appidacr\":\"2\",\"e_exp\":\"262800\",\"http://schemas.microsoft.com/identity/claims/identityprovider\":\"https://sts.windows.net/258f1f99-ee3d-42c7-bfc5-7af1b2343e02/\",\"http://schemas.microsoft.com/identity/claims/objectidentifier\":\"41079d3d-b860-4614-a921-16af1e514eda\",\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier\":\"41079d3d-b860-4614-a921-16af1e514eda\",\"http://schemas.microsoft.com/identity/claims/tenantid\":\"258f1f99-ee3d-42c7-bfc5-7af1b2343e02\",\"uti\":\"QsBiXxz0U0G9wFYjrzgaAA\",\"ver\":\"1.0\"}",
+                    "caller": "41079d3d-b860-4614-a921-16af1e514eda",
+                    "correlationId": "ee2a2461-0ca5-4450-8093-4952fec07082",
+                    "description": "",
+                    "eventSource": "Administrative",
+                    "eventTimestamp": "2018-02-23T12:05:03.4920837+00:00",
+                    "httpRequest": "{\"clientRequestId\":\"1641e44b-5f69-4182-ad7c-b7bb9ba01935\",\"clientIpAddress\":\"13.88.250.4\",\"method\":\"PUT\"}",
+                    "eventDataId": "fa2bc72d-8f36-49bf-b5ee-fdeb2799d030",
+                    "level": "Informational",
+                    "operationName": "Microsoft.Resources/subscriptions/resourcegroups/write",
+                    "operationId": "ee2a2461-0ca5-4450-8093-4952fec07082",
+                    "properties": {
+                        "requestbody": "{\"location\":\"canadaeast\",\"tags\":{\"Billto\":\"0001\",\"ProjectName\":\"CobeyDelete36\",\"ProjectOwner\":\"Cobey\"}}"
+                    },
+                    "resourceId": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourcegroups/CobeyDelete36-Management-rg",
+                    "resourceGroupName": "CobeyDelete36-Management-rg",
+                    "resourceProviderName": "Microsoft.Resources",
+                    "status": "Started",
+                    "subStatus": "",
+                    "subscriptionId": "b73ce7d3-fd70-4018-9bc6-5d160c574707",
+                    "submissionTimestamp": "2018-02-23T12:05:20.2797946+00:00",
+                    "resourceType": "Microsoft.Resources/subscriptions/resourcegroups"
+                }
+            },
+            "properties": {}
+        }
+    }
+}

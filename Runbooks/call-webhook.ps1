@@ -10,4 +10,5 @@ $params = @{"subscription"=$sub;"ProjectName"=$projectname;"ProjectOwner"=$proje
 
 $body = ConvertTo-Json -InputObject $params
 
-Invoke-WebRequest -Method Post -Uri $webhookURI -Body $params 
+Invoke-WebRequest -Method Post -Headers "Content-type: application/json" -Uri $webhookURI -Body $params 
+
