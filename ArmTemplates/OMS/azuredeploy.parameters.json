@@ -3,19 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "omsRecoveryVaultName": {
-            "value": "GEN-UNIQUE-10"
+            "value": "StatCan-RecoveryVault"
         },
         "omsRecoveryVaultRegion": {
             "value": "Canada Central"
         },
         "omsWorkspaceName": {
-            "value": "StatCan"
+            "value": "OMS-StatCan"
         },
         "omsWorkspaceRegion": {
             "value": "Canada Central"
         },
         "omsAutomationAccountName": {
-            "value": "GEN-UNIQUE-30"
+            "value": "OMS-Automation"
         },
         "omsAutomationRegion": {
             "value": "Canada Central"
