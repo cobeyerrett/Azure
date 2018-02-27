@@ -12,7 +12,8 @@
         "type": "string",
         "defaultValue": "Canada Central",
         "allowedValues": [
-          "Canada Central"
+          "Canada Central",
+          "Canada East"
         ],
         "metadata": {
           "description": "Specify the region for your Recovery Vault"
@@ -28,7 +29,8 @@
         "type": "string",
         "defaultValue": "Canada Central",
         "allowedValues": [
-          "Canada Central"
+          "Canada Central",
+          "Canada East"
         ],
         "metadata": {
           "description": "Specify the region for your Workspace"
