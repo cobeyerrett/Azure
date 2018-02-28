@@ -11,7 +11,10 @@
             "allowedValues": [
                 "Standard_A2",
                 "Standard_A0"
-            ]
+            ],
+            "metadata": {
+                "description": "The Size of VM"
+            }
         },
         "environment":{
             "type": "string",
@@ -23,23 +26,35 @@
             ]
         },
         "adminUserName":{
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description": "The local admin password of the VM"
+            }
         },
         "adminpassword":{
-            "type": "securestring"
+            "type": "securestring",
+            "metadata": {
+                "description": "The local admin password of the VM"
+            }
         },
         "VNetName":{
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description": "The Virtual Network the VM is to be placed"
+            }
         },
         "SubnetName":{
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description": "The subnet that the VM is to be added"
+            }
         }
 
     },
     "variables": {
         "VM":{
-           "NICName": "[concat(parameters('VMName'),'-NIC']",
-           "SAName": "[concat(parameters('VMName'),'-sa']" 
+           "NICName": "[concat(parameters('VMName'),'-NIC')]",
+           "SAName": "[concat(parameters('VMName'),'-sa')]" 
         }
     },
     "resources": [
@@ -69,7 +84,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Static",
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('VMName') ), '/subnets/', parameters('SubnetName'))]"
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('VNetName') , '/subnets/', parameters('SubnetName')))]"
                             }
                         }
                     }
@@ -129,7 +144,7 @@
                 {
                     "type": "extensions",
                     "name": "[concat(parameters('VMName'),'AzureDiagnostics')]",
-                    "apiVersion": "2015-06-15",
+                    "apiVersion": "2017-03-30",
                     "location": "[resourceGroup().location]",
                     "tags": {
                         "displayName": "WindowsVM1AzureDiagnostics",
