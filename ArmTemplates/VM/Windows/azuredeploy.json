@@ -54,7 +54,7 @@
     "variables": {
         "VM":{
            "NICName": "[concat(parameters('VMName'),'-NIC')]",
-           "SAName": " [concat(tolower(parameters('VMName'),'storageact'))]" 
+           "SAName": "[toLower(concat(parameters('VMName'),uniqueString(resourceGroup().id)))]" 
         }
     },
     "resources": [
