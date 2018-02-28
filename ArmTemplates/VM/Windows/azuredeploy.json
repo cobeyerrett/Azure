@@ -37,6 +37,12 @@
                 "description": "The local admin password of the VM"
             }
         },
+        "VnetResourceGroup": {
+            "type":"string",
+            "metadata": {
+                "description": "The resource group of the existing VNet"
+            }
+        },
         "VNetName":{
             "type": "string",
             "metadata": {
@@ -52,8 +58,10 @@
 
     },
     "variables": {
+        "vnetID": "[resourceId(parameters('VnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('VNetName'))]",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/', parameters('SubnetName'))]",
         "VM":{
-           "NICName": "[concat(parameters('VMName'),'-NIC')]",
+           "NICName": "[concat(parameters('VMName'),'-NIC',uniqueString(resourceGroup().id))]",
            "SAName": "[toLower(concat(parameters('VMName'),uniqueString(resourceGroup().id)))]" 
         }
     },
@@ -84,7 +92,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Static",
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('VNetName') , '/subnets/', parameters('SubnetName')))]"
+                                "id": "[variables('subnetRef')]"
                             }
                         }
                     }
