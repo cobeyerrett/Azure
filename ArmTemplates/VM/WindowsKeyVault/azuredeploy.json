@@ -1,0 +1,135 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vmName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the VM"
+        }
+      },
+      "keyVaultName":{
+          "type": "string"
+      },
+      "keyVaultRG":{
+          "type": "string"
+      },
+      "osType": {
+        "type": "string",
+        "allowedValues": [
+          "Windows",
+          "Linux"
+        ],
+        "metadata": {
+          "description": "Type of OS"
+        }
+      },
+      "vmSize": {
+        "type": "string",
+        "allowedValues": [
+            "Standard_A2",
+            "Standard_A0"
+        ],
+        "metadata": {
+          "description": "Size of the VM"
+        }
+      }
+    },
+    "variables": {
+      "diagStorageAccountName": "[concat(uniquestring(resourceGroup().id), 'specvm')]",    
+      "nicName": "[parameters('vmName')]",
+      "keyvaultID": "[concat(subscription().id,'/resourceGroups/',parameters('keyVaultRG'),'/providers/Microsoft.KeyVault/vaults/',parameters('keyVaultName'))]",
+      "subnetRef": {
+          "reference":{
+              "keyvault":{
+                  "id": "[variables('keyvaultID')]"
+              },
+              "secretName": "backSubnetRef"
+
+          }
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Storage/storageAccounts",
+        "name": "[variables('diagStorageAccountName')]",
+        "apiVersion": "2016-01-01",
+        "location": "[resourceGroup().location]",
+        "sku": {
+          "name": "Standard_GRS"
+        },
+        "kind": "Storage",
+        "properties": {}
+      },
+      {
+        "apiVersion": "2015-06-15",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[variables('nicName')]",
+        "location": "[resourceGroup().location]",
+        "dependsOn": [
+          
+        ],
+        "tags": {
+          "displayName": "NetworkInterface"
+        },
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAllocationMethod": "Dynamic",
+                "subnet": {
+                  "id": "[variables('subnetRef')]"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "apiVersion": "2017-03-30",
+        "type": "Microsoft.Compute/virtualMachines",
+        "name": "[parameters('vmName')]",
+        "location": "[resourceGroup().location]",
+        "tags": {
+          "displayName": "VirtualMachine"
+        },
+        "dependsOn": [
+          "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+        ],
+        "properties": {
+          "hardwareProfile": {
+            "vmSize": "[parameters('vmSize')]"
+          },
+          "storageProfile": {
+            "osDisk": {
+              "name": "[concat(parameters('vmName'))]",
+              "osType": "[parameters('osType')]",
+              "caching": "ReadWrite",
+              "imageReference":{
+                "publisher": "MicrosoftWindowsServer",
+                "offer": "WindowsServer",
+                "sku": "2016-Datasenter",
+                "version": "latest"
+              },
+              "createOption": "Attach"
+            }
+          },
+          "networkProfile": {
+            "networkInterfaces": [
+              {
+                "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+              }
+            ]
+          },
+          "diagnosticsProfile": {
+            "bootDiagnostics": {
+              "enabled": false
+              
+            }
+          }
+        }
+      }
+    ]
+  }
+  
