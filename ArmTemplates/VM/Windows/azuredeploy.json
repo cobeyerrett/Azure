@@ -54,7 +54,7 @@
     "variables": {
         "VM":{
            "NICName": "[concat(parameters('VMName'),'-NIC')]",
-           "SAName": "[concat(parameters('VMName'),'-sa')]" 
+           "SAName": " [concat(tolower(parameters('VMName'),'storageact'))]" 
         }
     },
     "resources": [
@@ -136,7 +136,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('http://', toLower(variables('VM').SAName) , '.blob.core.windows.net')]"
+                        "storageUri": "[concat('http://', variables('VM').SAName , '.blob.core.windows.net')]"
                     }
                 }
             },
