@@ -38,6 +38,15 @@
       },
       "adminPassword":{
           "type": "securestring"
+      },
+      "omsworkspaceId":{
+        "type": "securestring",
+        "metadata": {
+          "description": "Log Analytics Workspace"
+        }
+      },
+      "omsworkspaceKey":{
+        "type": "securestring"
       }
 
 
@@ -124,8 +133,34 @@
               
             }
           }
-        }
+        },
+        "resources":[
+          {
+            "type": "extensions",
+            "name": "Microsoft.EnterpriseCloud.Monitoring",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "dependson":[
+              "[concat('Microsoft.Compute/virtualMachines/',parameters('vmName'))]"
+            ],
+            "properties":{
+              "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+              "type": "MicrosoftMonitoringAgent",
+              "typeHandlerVersion": "1.0",
+              "autoUpgradeMinorVersion": true,
+              "settings": {
+                "workspaceId": "[parameters('omsworkspaceId')]"
+              },
+              "protectedSettings":{
+                "workspaceKey": "[parameters('omsworkspaceKey')]"
+              }
+              
+            }
+          }
+          
+        ]
       }
+      
     ]
   }
   
