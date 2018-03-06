@@ -64,4 +64,8 @@ $password = Read-Host "VM Local Admin Password" -AsSecureString
 Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name vmadmin -SecretValue $adminsecret
 Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name vmpasswd -SecretValue $password
 
+$workspaceIDsecret = Get-AzureKeyVaultSecret -VaultName cloudadmin -Name OMSWorkspaceID
+Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name OMSWorkspaceID -SecretValue $workspaceIDsecret
 
+$workspaceKey = Get-AzureKeyVaultSecret -VaultName cloudadmin -Name OMSWorkspaceKey
+$workspaceSecondary = Get-AzureKeyVaultSecret -VaultName cloudadmin -Name OMSWorkspaceKeySecondary
