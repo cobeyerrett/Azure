@@ -218,7 +218,7 @@
         "[resourceId('Microsoft.Network/networkSecurityGroups', 'appNetworkSecurityGroup')]"
       ],
       "tags": {
-        "displayName": "appVnet"
+        "displayName": "appVNet"
       },
       "properties": {
         "addressSpace": {
