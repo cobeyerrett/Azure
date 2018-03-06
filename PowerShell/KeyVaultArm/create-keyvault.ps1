@@ -65,7 +65,11 @@ Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name vmadmin -SecretValue $adm
 Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name vmpasswd -SecretValue $password
 
 $workspaceIDsecret = Get-AzureKeyVaultSecret -VaultName cloudadmin -Name OMSWorkspaceID
-Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name OMSWorkspaceID -SecretValue $workspaceIDsecret
+
+Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name OMSWorkspaceID -SecretValue $workspaceIDsecret.SecretValue
 
 $workspaceKey = Get-AzureKeyVaultSecret -VaultName cloudadmin -Name OMSWorkspaceKey
+Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name OMSWorkspaceKey -SecretValue $workspaceKey.SecretValue
+
 $workspaceSecondary = Get-AzureKeyVaultSecret -VaultName cloudadmin -Name OMSWorkspaceKeySecondary
+Set-AzureKeyVaultSecret -VaultName $kv.VaultName -Name OMSWorkspaceKeySecondary -SecretValue $workspaceSecondary.SecretValue
