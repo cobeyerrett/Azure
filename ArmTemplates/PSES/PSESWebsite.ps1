@@ -1,4 +1,4 @@
-Configuration ContosoWebsite
+Configuration PSESWebsite
 {
   param ($MachineName)
 
@@ -7,15 +7,15 @@ Configuration ContosoWebsite
     #Install the IIS Role
     WindowsFeature IIS
     {
-      Ensure = “Present”
-      Name = “Web-Server”
+      Ensure = ï¿½Presentï¿½
+      Name = ï¿½Web-Serverï¿½
     }
 
     #Install ASP.NET 4.5
     WindowsFeature ASP
     {
-      Ensure = “Present”
-      Name = “Web-Asp-Net45”
+      Ensure = ï¿½Presentï¿½
+      Name = ï¿½Web-Asp-Net45ï¿½
     }
 
      WindowsFeature WebServerManagementConsole

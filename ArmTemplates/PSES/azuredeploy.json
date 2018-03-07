@@ -36,6 +36,7 @@
         },
         "modulesUrl": {
             "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/cobeyerrett/Azure/master/ArmTemplates/PSES/PSESWebsite.zip",
             "metadata": {
               "description": "URL for the DSC configuration module. NOTE: Can be a Github url(raw) to the zip file"
             }
@@ -54,6 +55,10 @@
         "SAName": "[toLower(concat(parameters('VMName'),uniqueString(resourceGroup().id)))]",
         "PubIP" : "[toLower(concat(parameters('VMName'),'-pip'))]",
         "VNetName": "[tolower(concat(parameters('VMName'),'-VNet'))]",
+        "SubnetName": "PSES",
+        "NSGName": "[concat(variables('SubnetName'),'-nsg')]",
+        "VNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
+        "SubnetRef": "[concat(variables('VNetID'),'/subnets/',variables('SubnetName'))]",
         "NICName": "[tolower(concat(parameters('VMName'),'-NIC'))]",
         "vmExtensionName": "dscExtension"
     },
@@ -85,6 +90,7 @@
                 }
             }
         },
+        
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/virtualNetworks",
@@ -101,7 +107,7 @@
                 },
                 "subnets": [
                     {
-                        "name": "default",
+                        "name": "[variables('SubnetName')]",
                         "properties": {
                             "addressPrefix": "10.0.0.0/24"
                         }
@@ -131,7 +137,7 @@
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PubIP'))]"
                             },
                             "subnet": {
-                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'), '/subnets/default'))]"
+                                "id": "[variables('SubnetRef')]"
                             }
                         }
                     }
