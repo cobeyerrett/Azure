@@ -10,13 +10,21 @@
             "Innovation"
         ]
       },
+      "service":{
+        "type": "string",
+        "allowedValues": [
+            "IIS",
+            "NGinx",
+            "SQL"
+        ]
+      },
       "tier":{
-          "type": "string",
-          "allowedValues": [
-              "front",
-              "mid",
-              "back"
-          ]
+        "type": "string",
+        "allowedValues": [
+            "front",
+            "mid",
+            "back"
+        ]
       },
       "vmname": {
         "type": "string"
