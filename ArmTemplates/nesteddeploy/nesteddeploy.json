@@ -57,7 +57,7 @@
     "resources": [
     {
       "apiVersion": "2015-01-01",
-      "name": "nestedTemplate",
+      "name": "[concat('NestedTemplate',uniqueString(resourceGroup().id))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
