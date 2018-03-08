@@ -21,7 +21,7 @@
         
     },
     "variables": {
-        "nicname": "[toLower(concat(parameters('vmname'),'-nic'))]",
+        "nicname": "[toLower(concat(parameters('vmname'),'-nic',uniqueString(resourceGroup().id)))]",
         "saname": "[toLower(concat(parameters('vmname'),uniqueString(resourceGroup().id)))]"
     },
     "resources": [
