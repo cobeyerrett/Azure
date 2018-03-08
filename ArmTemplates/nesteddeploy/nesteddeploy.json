@@ -2,7 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "environment": {
+        "keyVaultSubID":{
+            "type": "securestring",
+            "metadata": {
+                "description": "Enter the Subscription ID where the ARM Deployment Key Vault Exists. If required open an JIRA" 
+            }
+        },
+        "environment": {
         "type": "string",
         "allowedValues": [
             "Dev",
@@ -16,10 +22,16 @@
             "IIS",
             "NGinx",
             "SQL"
-        ]
+        ],
+        "metadata": {
+            "description": "Service line for the VM you wish to deploy"
+        }
       },
       "tier":{
         "type": "string",
+        "metadata": {
+            "description": "Network zone for the VM"
+        },
         "allowedValues": [
             "front",
             "mid",
@@ -40,7 +52,7 @@
       }
     },
     "variables": {
-        "keyvaultID": "[concat('/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-management-rg/providers/Microsoft.KeyVault/vaults/StatCanArm',parameters('environment'))]"
+        "keyvaultID": "[concat('/subscriptions/',parameters('keyVaultSubID'),'/resourceGroups/keyvault-management-rg/providers/Microsoft.KeyVault/vaults/StatCanArm',parameters('environment'))]"
     },
     "resources": [
     {
