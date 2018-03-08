@@ -22,7 +22,7 @@
     },
     "variables": {
         "nicname": "[toLower(concat(parameters('vmname'),'-nic'))]",
-        "saname": "[toLower(concat(parameters('vmname'),'-sa',uniqueString(resourceGroup().id)))]"
+        "saname": "[toLower(concat(parameters('vmname'),uniqueString(resourceGroup().id)))]"
     },
     "resources": [
         {
