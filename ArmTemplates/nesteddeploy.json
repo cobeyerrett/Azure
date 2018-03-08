@@ -1,0 +1,80 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "environment": {
+        "type": "string",
+        "allowedValues": [
+            "Dev",
+            "Test",
+            "Innovation"
+        ]
+      },
+      "tier":{
+          "type": "string",
+          "allowedValues": [
+              "front",
+              "mid",
+              "back"
+          ]
+      },
+      "vmname": {
+        "type": "string"
+      },
+      "vmsize":{
+          "type": "string",
+          "allowedValues": [
+              "Standard_D1",
+              "Standard_D2",
+              "Standard_D3",
+              "Standard_D4"
+          ]
+      }
+    },
+    "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "name": "nestedTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Complete",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/cobeyerrett/Azure/master/ArmTemplates/simplevm.json",
+          "contentVersion": "1.0.0.0"
+        }
+    },
+        "parameters": {
+          "adminPassword": {
+            "reference": {
+              "keyVault": {
+                "id": "[concat('/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-management-rg/providers/Microsoft.KeyVault/vaults/StatCanArm',parameters('environment'))]"
+              },
+              "secretName": "vmapasswd"
+            }
+          },
+          "adminLogin": {
+              "reference": {
+                  "keyVault": {
+                    "id": "[concat('/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-management-rg/providers/Microsoft.KeyVault/vaults/StatCanArm',parameters('environment'))]"
+                  },
+                  "secretName": "vmadmin"
+              }
+          },
+          "subnetID":{
+              "reference": {
+                  "keyVault": {
+                    "id": "[concat('/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-management-rg/providers/Microsoft.KeyVault/vaults/StatCanArm',parameters('environment'))]" 
+                  },
+                  "secretName": "[concat(parameters('tier'),'SubnetRef')]"
+              }
+          },
+          "vmname": {
+              "value": "[parameters('vmname')]"
+          },
+          "vmsize": {
+              "value": "[parameters('vmsize')]"
+          }
+      }
+    }],
+    "outputs": {}
+}
