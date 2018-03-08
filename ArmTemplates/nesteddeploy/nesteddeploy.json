@@ -40,7 +40,7 @@
       "name": "nestedTemplate",
       "type": "Microsoft.Resources/deployments",
       "properties": {
-        "mode": "incremental",
+        "mode": "Incremental",
         "templateLink": {
           "uri": "https://raw.githubusercontent.com/cobeyerrett/Azure/master/ArmTemplates/nesteddeploy/simplevm.json",
           "contentVersion": "1.0.0.0"
