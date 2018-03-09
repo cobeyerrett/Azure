@@ -5,7 +5,7 @@
         "keyVaultSubID":{
             "type": "securestring",
             "metadata": {
-                "description": "Enter the Subscription ID where the ARM Deployment Key Vault Exists. If required open an JIRA" 
+                "description": "Enter the Subscription ID where the ARM Deployment Key Vault Exists. If required open a JIRA" 
             }
         },
         "environment": {
