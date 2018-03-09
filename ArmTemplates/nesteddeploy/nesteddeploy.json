@@ -69,7 +69,7 @@
             "adminPassword": {
               "reference": {
                 "keyVault": {
-                  "id": "[concat('/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-management-rg/providers/Microsoft.KeyVault/vaults/StatCanArm',parameters('environment'))]"
+                  "id": "[variables('keyvaultID')]"
                 },
                 "secretName": "vmpasswd"
               }
