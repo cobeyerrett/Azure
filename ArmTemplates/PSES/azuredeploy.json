@@ -18,6 +18,12 @@
         "vmname":{
             "type": "string"
         },
+        "vmadmin":{
+            "type": "string"
+        },
+        "vmpasswd":{
+            "type": "securestring"
+        },
         "subnetRef":{
             "type": "string",
             "metadata": {
@@ -99,7 +105,7 @@
             }
         },
         {
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-10-01",
             "type": "Microsoft.Network/publicIPAddresses",
             "name": "[variables('publicIPName')]",
             "location": "[resourceGroup().location]",
@@ -109,7 +115,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "DNS_NAME"
+                    "domainNameLabel": "psesstatcan"
                 }
             }
         },
@@ -129,7 +135,7 @@
                     {
                         "name": "ipconfig1",
                         "properties": {
-                            "privateIPAllocationMethod": "Static",
+                            "privateIPAllocationMethod": "Dynamic",
                             "subnet": {
                                 "id": "[parameters('subnetRef')]"
                             }
@@ -156,8 +162,8 @@
                 },
                 "osProfile": {
                     "computerName": "[parameters('vmname')]",
-                    "adminUsername": "ADMIN_USERNAME",
-                    "adminPassword": "ADMIN_PASSWORD"
+                    "adminUsername": "[parameters('vmadmin')]",
+                    "adminPassword": "[parameters('vmpasswd')]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -167,7 +173,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "WindowsVM1OSDisk",
+                        "name": "[concat(parameters('vmname'),'osdisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
                     }
@@ -191,9 +197,9 @@
                     "type": "extensions",
                     "name": "[concat(parameters('vmname'),'AzureDiagnostics')]",
                     "apiVersion": "2017-03-30",
-                    "location": "[concat(parameters('vmname'),'AzureDiagnostics')]",
+                    "location": "[resourceGroup().location]",
                     "tags": {
-                        "displayName": "WindowsVM1AzureDiagnostics"
+                        "displayName": "[concat(parameters('vmname'),'AzureDiagnostics')]"
                     },
                     "dependsOn": [
                         "[concat('Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
@@ -209,7 +215,7 @@
                         },
                         "protectedSettings": {
                             "storageAccountName": "[variables('storageacctname')]",
-                            "storageAccountKey": "[listkeys(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Storage/storageAccounts/', toLower('WindowsVM1storage')), '2015-06-15').key1]",
+                            "storageAccountKey": "[listkeys(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Storage/storageAccounts/', variables('storageacctname')), '2015-06-15').key1]",
                             "storageAccountEndPoint": "https://core.windows.net"
                         }
                     }
@@ -218,8 +224,8 @@
         },
         {
             "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('projectName'),'PowerBIEmbedded')]",
-            "location": "[resourceGroup().location]",
+            "name": "[tolower(concat(parameters('projectName'),'PowerBIEmbedded'))]",
+            "location": "canadacentral",
             "type": "Microsoft.PowerBIDedicated/capacities",
             "sku": {
                 "name": "[parameters('sku')]"
