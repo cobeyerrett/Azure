@@ -52,7 +52,8 @@
         "keyvaultname" : "[concat(parameters('projectName'),'keyvault')]",
         "publicIPName" : "[concat(parameters('projectName'),'-pip')]",
         "storageacctname": "[toLower(concat(parameters('vmname'),'storage'))]",
-        "nicname": "[concat(parameters('vmname'),'nic')]"
+        "nicname": "[concat(parameters('vmname'),'nic')]",
+        "nsgname": "[concat(parameters('vmname'),'-nsg')]"
     },
     "resources": [
         {
@@ -120,17 +121,93 @@
             }
         },
         {
+            "apiVersion": "2017-06-01",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('nsgname')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "Partner_HTTPS",
+                        "properties": {
+                            "description": "HTTPS Partner Access",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "443",
+                            "sourceAddressPrefixes": [
+                                "142.206.2.0/24",
+                                "142.206.3.0/24"
+                            ],
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "Partner_HTTP",
+                        "properties": {
+                            "description": "HTTP Partner Access",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "80",
+                            "sourceAddressPrefixes": [
+                                "142.206.2.0/24",
+                                "142.206.3.0/24"
+                            ],
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 101,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "Deny_Internet",
+                        "properties": {
+                            "description": "Deny all internet traffic",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 102,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "Deny_Internet_Out",
+                        "properties": {
+                            "description": "Deny Internet Traffic Out",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 100,
+                            "direction": "Outbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
             "name": "[variables('nicname')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/',variables('publicIPName'))]"
+                "[concat('Microsoft.Network/publicIPAddresses/',variables('publicIPName'))]",
+                "[concat('Microsoft.Network/networkSecurityGroups/',variables('nsgname'))]"
             ],
             "tags": {
                 "displayName": "[concat(parameters('vmname'),' Network Interface')]"
             },
             "properties": {
+                "networkSecurityGroup":{
+                    "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',variables('nsgname'))]"
+                },
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
