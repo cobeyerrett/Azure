@@ -15,7 +15,7 @@ function Show-Menu
      Write-Host "2: Press '2' to make new RBAC role."
      Write-Host "3: Press '3' query all Custom RBAC roles."
      Write-Host "4: Press '4' query all Built-In RBAC roles."
-     Write-Host "5: Press '5' query roles for specific RBAC role."3
+     Write-Host "5: Press '5' query roles for specific RBAC role."
      Write-Host "6: Press '6' to export role to JSON format"
      Write-Host "q: Press 'q' to quit."
 }

@@ -1,0 +1,104 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultSubID":{
+            "type": "securestring",
+            "metadata": {
+                "description": "Enter the Subscription ID where the ARM Deployment Key Vault Exists. If required open a JIRA" 
+            }
+        },
+        "environment": {
+        "type": "string",
+        "allowedValues": [
+            "Dev",
+            "Test",
+            "Innovation"
+        ]
+      },
+      "service":{
+        "type": "string",
+        "allowedValues": [
+            "IIS",
+            "NGinx",
+            "SQL"
+        ],
+        "metadata": {
+            "description": "Service line for the VM you wish to deploy"
+        }
+      },
+      "tier":{
+        "type": "string",
+        "metadata": {
+            "description": "Network zone for the VM"
+        },
+        "allowedValues": [
+            "front",
+            "mid",
+            "back"
+        ]
+      },
+      "vmname": {
+        "type": "string"
+      },
+      "vmsize":{
+          "type": "string",
+          "allowedValues": [
+            "Standard_D1_v2",
+            "Standard_D2_v2",
+            "Standard_D3_v2"
+              
+          ]
+      }
+    },
+    "variables": {
+        "keyvaultID": "[concat('/subscriptions/',parameters('keyVaultSubID'),'/resourceGroups/keyvault-management-rg/providers/Microsoft.KeyVault/vaults/StatCanArm',parameters('environment'))]"
+    },
+    "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "name": "[concat('NestedTemplate',uniqueString(resourceGroup().id))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/cobeyerrett/Azure/master/ArmTemplates/nesteddeploy/simplevm.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+            "adminPassword": {
+              "reference": {
+                "keyVault": {
+                  "id": "[variables('keyvaultID')]"
+                },
+                "secretName": "vmpasswd"
+              }
+            },
+            "adminLogin": {
+                "reference": {
+                    "keyVault": {
+                      "id": "[variables('keyvaultID')]"
+                    },
+                    "secretName": "vmadmin"
+                }
+            },
+            "subnetID":{
+                "reference": {
+                    "keyVault": {
+                      "id": "[variables('keyvaultID')]" 
+                    },
+                    "secretName": "[concat(parameters('tier'),'SubnetRef')]"
+                }
+            },
+            "vmname": {
+                "value": "[parameters('vmname')]"
+            },
+            "vmsize": {
+                "value": "[parameters('vmsize')]"
+            }
+        }
+    }
+        
+    }],
+    "outputs": {}
+}

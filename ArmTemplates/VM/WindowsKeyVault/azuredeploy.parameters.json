@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "value": "TestVM"    
+        },
+        "osType": {
+            "value": "Windows"
+        },
+        
+        "vmSize": {
+            "value": "Standard_A2"  
+        },
+        "omsworkspaceName":{
+            "value": "OMS-StatCan"
+        },
+        "subnetRef":{
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-Management-rg/providers/Microsoft.KeyVault/vaults/ARMDev"
+                },
+                "secretName": "backSubnetRef"
+            }
+        },
+        "adminUsername":{
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-Management-rg/providers/Microsoft.KeyVault/vaults/ARMDev"
+                },
+                "secretName": "vmadmin"
+            }
+        },
+        "adminpassword":{
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/b73ce7d3-fd70-4018-9bc6-5d160c574707/resourceGroups/keyvault-Management-rg/providers/Microsoft.KeyVault/vaults/ARMDev"
+                },
+                "secretName": "vmpasswd"
+            }
+        }
+
+    }
+}

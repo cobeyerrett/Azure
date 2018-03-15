@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "omsRecoveryVaultName": {
+            "value": "StatCan-RecoveryVault"
+        },
+        "omsRecoveryVaultRegion": {
+            "value": "Canada Central"
+        },
+        "omsWorkspaceName": {
+            "value": "OMS-StatCan"
+        },
+        "omsWorkspaceRegion": {
+            "value": "Canada Central"
+        },
+        "omsAutomationAccountName": {
+            "value": "OMS-Automation"
+        },
+        "omsAutomationRegion": {
+            "value": "Canada Central"
+        },
+        "azureAdminPwd": {
+            "value": "GEN-PASSWORD"
+        },
+        "azureAdmin": {
+            "value": "azureadmin"
+        },
+        "_artifactsLocation": {
+            "value": "https://raw.githubusercontent.com/cobeyerrett/Azure/master/ArmTemplates/OMS"
+        }
+    }
+}
