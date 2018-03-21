@@ -2,10 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "TennantID":{
-            "defaultValue": "258f1f99-ee3d-42c7-bfc5-7af1b2343e02",
-            "type": "string"
-        },
         "BillTo":{
             "type": "string"
         },
@@ -18,10 +14,6 @@
         "DTLName":{
             "defaultValue": "[concat(parameters('ProjectName'),'DTL')]",
             "type": "string"
-        },
-        "VHDStrgAccnt":{
-            "type": "string",
-            "defaultValue": "acloudteam5245"
         },
         "VNetName":{
             "type": "string",
