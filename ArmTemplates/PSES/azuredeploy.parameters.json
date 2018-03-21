@@ -1,0 +1,31 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "tenantId": {
+            "value": "258f1f99-ee3d-42c7-bfc5-7af1b2343e02"
+        },
+        "objectID":{
+            "value": "cb7dd612-f7db-4690-936a-2c77addefe26"
+        },
+        "projectName":{
+            "value": "PSES"
+        },
+        "vmname":{
+            "value": "PSES"
+        },
+        "vmadmin":{
+            "value": "cloudadmin"
+        },
+        "subnetRef":{
+            "value": "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8/resourceGroups/network-Innovation-rg/providers/Microsoft.Network/virtualNetworks/Innovation-VNet/subnets/FrontInn"
+        },
+        "sku":{
+            "value": "A1"
+        },
+        "biebeddedadmin":{
+            "value": "cobey.errett@cloud.statcan.ca"
+        }
+      
+    }
+  }
