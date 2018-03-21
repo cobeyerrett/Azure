@@ -132,7 +132,6 @@
                         "properties": {
                             "description": "HTTPS Partner Access",
                             "protocol": "Tcp",
-                            "sourceAddressPrefix": "*",
                             "sourcePortRange": "*",
                             "destinationPortRange": "443",
                             "sourceAddressPrefixes": [
@@ -151,7 +150,6 @@
                             "description": "HTTP Partner Access",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
-                            "sourceAddressPrefix": "*",
                             "destinationPortRange": "80",
                             "sourceAddressPrefixes": [
                                 "142.206.2.0/24",
