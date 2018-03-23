@@ -2,40 +2,37 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vmname":{
+        "vmName":{
             "type": "string"
         },
-        "vmsize":{
-            "type": "string"
-        },
-
-        "subnetID":{
-            "type": "string"
-        },
-        "adminlogin":{
-            "type": "string"
-        },
-        "adminPassword":{
+        "subnetRef":{
             "type": "string"
         }
-        
     },
-    "variables": {
-        "nicname": "[toLower(concat(parameters('vmname'),'-nic'))]",
-        "saname": "[toLower(concat(parameters('vmname'),'-sa',uniqueString(resourceGroup().id)))]"
-    },
+    "variables": {},
     "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[toLower('WindowsVM1storage')]",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "WindowsVM1 Storage Account"
+            },
+            "properties": {
+                "accountType": "Standard_LRS"
+            }
+        },
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[variables('nicname')]",
+            "name": "WindowsVM1-NetworkInterface",
             "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "[variables('nicname')]"
-            },
             "dependsOn": [
-                
             ],
+            "tags": {
+                "displayName": "WindowsVM1 Network Interface"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
@@ -43,7 +40,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "subnet": {
-                                "id": "[parameters('subnetID')]"
+                                "id": "[parameters('subnetRef')]"
                             }
                         }
                     }
@@ -51,37 +48,25 @@
             }
         },
         {
-            "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('saname')]",
-            "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "[concat(parameters('vmname'), ' Storage Account')]"
-            },
-            "properties": {
-                "accountType": "Standard_LRS"
-            }
-        },
-        {
             "apiVersion": "2017-03-30",
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "[parameters('vmname')]",
+            "name": "[parameters('vmName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', variables('saname'))]",
-                "[concat('Microsoft.Network/networkInterfaces/', variables('nicname'))]"
+                "[concat('Microsoft.Storage/storageAccounts/', toLower('WindowsVM1storage'))]",
+                "[concat('Microsoft.Network/networkInterfaces/',variables('nicName'))]"
             ],
             "tags": {
-                "displayName": "[parameters('vmname')]"
+                "displayName": "[parameters('vmName')]"
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('vmsize')]"
+                    "vmSize": "[parameters('vmSize')]"
                 },
                 "osProfile": {
-                    "computerName": "[parameters('vmname')]",
-                    "adminUsername": "[parameters('adminlogin')]",
-                    "adminPassword": "[parameters('adminPassword')]"
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "ADMIN_USERNAME",
+                    "adminPassword": "ADMIN_PASSWORD"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -91,7 +76,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat(parameters('vmname'),'OSDisk')]",
+                        "name": "WindowsVM1OSDisk",
                         "caching": "ReadWrite",
                         "createOption": "FromImage"
                     }
@@ -99,28 +84,28 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicname'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'WindowsVM1-NetworkInterface')]"
                         }
                     ]
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "[concat('http://',variables('saname') , '.blob.core.windows.net')]"
+                        "storageUri": "[concat('http://', toLower('WindowsVM1storage'), '.blob.core.windows.net')]"
                     }
                 }
             },
             "resources": [
                 {
                     "type": "extensions",
-                    "name": "[concat(parameters('vmname'),'AzureDiagnostics')]",
-                    "apiVersion": "2017-03-30",
+                    "name": "WindowsVM1AzureDiagnostics",
+                    "apiVersion": "2015-06-15",
                     "location": "[resourceGroup().location]",
                     "tags": {
-                        "displayName": "[concat(parameters('vmname'),'AzureDiagnostics')]"
+                        "displayName": "WindowsVM1AzureDiagnostics"
                     },
                     "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmname'))]"
+                        "Microsoft.Compute/virtualMachines/WindowsVM1"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Azure.Diagnostics",
@@ -129,10 +114,10 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "xmlCfg": "[base64('<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http: //schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/> <Logs scheduledTransferPeriod=\"PT1M\" scheduledTransferLogLevelFilter=\"Error\" /> <Directories scheduledTransferPeriod=\"PT1M\"> <IISLogs containerName =\"wad-iis-logfiles\" /> <FailedRequestLogs containerName =\"wad-failedrequestlogs\" /> </Directories> <WindowsEventLog scheduledTransferPeriod=\"PT1M\" > <DataSource name=\"Application!*\" /> </WindowsEventLog> <CrashDumps containerName=\"wad-crashdumps\" dumpType=\"Mini\"> <CrashDumpConfiguration processName=\"WaIISHost.exe\"/> <CrashDumpConfiguration processName=\"WaWorkerHost.exe\"/> <CrashDumpConfiguration processName=\"w3wp.exe\"/> </CrashDumps> <PerformanceCounters scheduledTransferPeriod=\"PT1M\"> <PerformanceCounterConfiguration counterSpecifier=\"\\Memory\\Available MBytes\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\Web Service(_Total)\\ISAPI Extension Requests/sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\Web Service(_Total)\\Bytes Total/Sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET Applications(__Total__)\\Requests/Sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET Applications(__Total__)\\Errors Total/Sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET\\Requests Queued\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET\\Requests Rejected\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\Processor(_Total)\\% Processor Time\" sampleRate=\"PT3M\" /> </PerformanceCounters> </DiagnosticMonitorConfiguration> </WadCfg>')]",
-                            "storageAccount": "[variables('saname')]"
+                            "storageAccount": "[toLower('WindowsVM1storage')]"
                         },
                         "protectedSettings": {
-                            "storageAccountName": "[variables('saname')]",
+                            "storageAccountName": "[toLower('WindowsVM1storage')]",
                             "storageAccountKey": "[listkeys(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Storage/storageAccounts/', toLower('WindowsVM1storage')), '2015-06-15').key1]",
                             "storageAccountEndPoint": "https://core.windows.net"
                         }
