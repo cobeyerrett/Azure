@@ -12,8 +12,7 @@
             }
         },
         "projectName":{
-            "type": "string",
-            "defaultValue": "PSES"
+            "type": "string"
         },
         "vmname":{
             "type": "string"
@@ -41,31 +40,100 @@
                 "description": "The admin user of the Embedded Power BI"
             }
         },
-        "skuSize":{
+        "vmSku": {
             "type": "string",
-            "defaultValue": "WAF_Medium"
+            "defaultValue": "Standard_D4s_v3",
+            "metadata": {
+                "description": "Size of VMs in the VM Scale Set"
+            }
         },
-        "tier":{
+        "vmAdminUser":{
             "type": "string",
-            "defaultValue": "WAF"
+            "defaultValue": "cloudadmin",
+            "metadata": {
+                "description": "The local admin user for the VM scale set"
+            }
         },
-        "capacity":{
+        "vmAdminPasswd":{
+            "type": "securestring",
+            "metadata": {
+                "description": "The local admin passwod for the VM scale set"
+            }
+        },
+        "instanceCount":{
             "type": "int",
-            "defaultValue": 2
+            "metadata": {
+                "description": "The number of instances in the scale set"
+            }
+        },
+        "windowsOSVersion": {
+            "type": "string",
+            "defaultValue": "2016-Datacenter",
+            "allowedValues": [
+              "2016-Datacenter",
+              "2012-Datacenter",
+              "2012-R2-Datacenter"
+            ]   
+        },
+        "webDeployPackageURI":{
+            "type": "string"
+        },
+        "domainName":{
+            "type": "string"
+        },
+        "ouPath":{
+            "type": "string"
+        },
+        "domainUsername":{
+            "type": "string"
+        },
+        "domainJoinPassword":{
+            "type": "securestring"
         }
-        
-
     },
     "variables": {
-        "keyvaultname" : "[concat(parameters('projectName'),'keyvault')]",
-        "publicIPName" : "[concat(parameters('projectName'),'-pip')]",
-        "storageacctname": "[toLower(concat(parameters('vmname'),'storage'))]",
+        "keyvaultname" : "[concat(parameters('projectName'),uniqueString(resourceGroup().id))]",
+        "storageacctname": "[toLower(concat(parameters('vmname'),uniqueString(resourceGroup().id)))]",
         "nicname": "[concat(parameters('vmname'),'nic')]",
-        "publicIPRef": "[resourceId('Microsoft.Network/publicIPAddresses/',variables('publicIPName'))]",
-        "applicationGatewayName": "[concat(parameters('projectName'),'WAF')]",
-        "applicationGatewayID": "[resourceId('Microsoft.Network/applicationGateways', variables('applicationGatewayName'))]"
+        "lbName": "[concat(parameters('projectName'), '-lb')]",
+        "lbFrontEnd": "LoadBalancerFrontEnd",
+        "lbID": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName'))]",
+        "bePoolName": "[concat(parameters('projectName'),'-bePool')]",
+        "natPoolName": "[concat(parameters('projectName'),'-natpool')]",
+        "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
+        "natStartPort": 50000,
+        "natEndPort": 50119,
+        "natBackendPort": 3389,
+        "scalesetName": "[concat(parameters('projectName'),'-ss')]",
+        "osType": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('windowsOSVersion')]",
+            "version": "latest"
+        },
+        "imageReference": "[variables('osType')]",
+        "ipConfigName": "[concat(parameters('projectName'),'ipconfig')]",
+        "iisInstallURI": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vmss-windows-webapp-dsc-autoscale/DSC/IISInstall.ps1.zip",
+        "iisFile": "IISInstall.ps1"
+        
     },
     "resources": [
+        {
+            "apiVersion": "2017-10-01",
+            "name": "[tolower(concat(parameters('projectName'),'PowerBIEmbedded'))]",
+            "location": "canadacentral",
+            "type": "Microsoft.PowerBIDedicated/capacities",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "properties": {
+                "administration": {
+                    "members": [
+                        "[parameters('biebeddedadmin')]"
+                    ]
+                }
+            }
+        },
         {
            "type": "Microsoft.KeyVault/vaults",
            "apiVersion": "2015-06-01",
@@ -104,6 +172,73 @@
               ]
         },
         {
+            "type": "Microsoft.Network/loadBalancers",
+            "name": "[variables('lbName')]",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2017-06-01",
+            "properties": {
+                "frontendIPConfigurations":[
+                    {
+                        "name": "[variables('lbFrontEnd')]",
+                        "properties": {
+                            "privateIPAllocationMethod":"Dynamic",
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            }
+                        }
+                    }   
+                ],
+                "backendAddressPools":[
+                    {
+                        "name": "[variables('bePoolName')]"
+                    }
+                ],
+                "loadBalancingRules":[
+                    {
+                        "name": "[parameters('projectName')]",
+                        "properties":{
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(variables('lbName'))), '/frontendIpConfigurations/',variables('lbFrontEnd'))]"
+                            },
+                            "protocol":"Tcp",
+                            "loadDistribution":"Default",
+                            "frontendPort": 80,
+                            "backendPort": 80,
+                            "idleTimeoutInMinutes": 4,
+                            "enableFloatingIP": true
+                        }
+                    }
+                ],
+                "probes":[
+                    {
+                        "name": "[parameters('projectName')]",
+                        "properties":{
+                            "protocol":"Http",
+                            "port": 80,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2,
+                            "requestPath": "/"
+                            
+                        }
+                    }
+                ],
+                "inboundNatPools":[
+                    {
+                        "name": "[variables('natPoolName')]",
+                        "properties":{
+                            "frontendIPConfiguration": {
+                                "id": "[variables('frontEndIPConfigID')]"
+                            },
+                            "protocol": "Tcp",
+                            "frontendPortRangeStart": "[variables('natStartPort')]",
+                            "frontendPortRangeEnd": "[variables('natEndPort')]",
+                            "backendPort":"[variables('natBackendPort')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "name": "[variables('storageacctname')]",
             "apiVersion": "2015-06-15",
@@ -116,240 +251,176 @@
             }
         },
         {
-            "apiVersion": "2015-06-15",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[variables('publicIPName')]",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "[concat('Public IP for ',parameters('projectName'))]"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "DNS_NAME"
-                }
-            }
-        },
-        {
-            "name": "[variables('applicationGatewayName')]",
-            "type": "Microsoft.Network/applicationGateways",
-            "apiVersion": "2017-10-01",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPName'))]"
-            ],
-            "properties": {
-                "sku": {
-                    "name": "[parameters('skuSize')]",
-                    "tier": "[parameters('tier')]",
-                    "capacity": "[parameters('capacity')]"
-                },
-                "gatewayIPConfigurations": [
-                    {
-                        "name": "appGatewayIpConfig",
-                        "properties": {
-                            "subnet": {
-                                "id": "[parameters('subnetRef')]"
-                            }
-                        }
-                    }
-                ],
-                "frontendIPConfigurations": [
-                    {
-                        "name": "[concat(parameters('projectName'),'appGatewayFrontendIP')]",
-                        "properties": {
-                            "PublicIPAddress": {
-                                "id": "[variables('publicIPRef')]"
-                            }
-                        }
-                    }
-                ],
-                "frontendPorts": [
-                    {
-                        "name": "appGatewayFrontendPort",
-                        "properties": {
-                            "Port": 80
-                        }
-                    }
-                ],
-                "backendAddressPools": [
-                    {
-                        "name": "appGatewayBackendPool",
-                        "properties": {
-                            "BackendAddresses": []
-                        }
-                    }
-                ],
-                "backendHttpSettingsCollection": [
-                    {
-                        "name": "appGatewayBackendHttpSettings",
-                        "properties": {
-                            "Port": 80,
-                            "Protocol": "Http",
-                            "CookieBasedAffinity": "Disabled"
-                        }
-                    }
-                ],
-                "httpListeners": [
-                    {
-                        "name": "appGatewayHttpListener",
-                        "properties": {
-                            "FrontendIPConfiguration": {
-                                "Id": "[concat(variables('applicationGatewayID'), '/frontendIPConfigurations/appGatewayFrontendIP')]"
-                            },
-                            "FrontendPort": {
-                                "Id": "[concat(variables('applicationGatewayID'), '/frontendPorts/appGatewayFrontendPort')]"
-                            },
-                            "Protocol": "Http",
-                            "SslCertificate": null
-                        }
-                    }
-                ],
-                "requestRoutingRules": [
-                    {
-                        "Name": "rule1",
-                        "properties": {
-                            "RuleType": "Basic",
-                            "httpListener": {
-                                "id": "[concat(variables('applicationGatewayID'), '/httpListeners/appGatewayHttpListener')]"
-                            },
-                            "backendAddressPool": {
-                                "id": "[concat(variables('applicationGatewayID'), '/backendAddressPools/appGatewayBackendPool')]"
-                            },
-                            "backendHttpSettings": {
-                                "id": "[concat(variables('applicationGatewayID'), '/backendHttpSettingsCollection/appGatewayBackendHttpSettings')]"
-                            }
-                        }
-                    }
-                ],
-                "sslCertificates": [],
-                "webApplicationFirewallConfiguration": {
-                    "enabled": true,
-                    "firewallMode": "Prevention",
-                    "ruleSetType": "OWASP",
-                    "ruleSetVersion": "3.0"
-                }
-            }
-        },
-        {
-            "apiVersion": "2015-06-15",
-            "type": "Microsoft.Network/networkInterfaces",
-            "name": "[variables('nicname')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[concat('Microsoft.Network/publicIPAddresses/',variables('publicIPName'))]"
-            ],
-            "tags": {
-                "displayName": "[concat(parameters('vmname'),' Network Interface')]"
-            },
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "privateIPAllocationMethod": "Static",
-                            "subnet": {
-                                "id": "[parameters('subnetRef')]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
+            "type": "Microsoft.Compute/virtualMachineScaleSets",
             "apiVersion": "2017-03-30",
-            "type": "Microsoft.Compute/virtualMachines",
-            "name": "[parameters('vmname')]",
+            "name": "[variables('scalesetName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', variables('storageacctname'))]",
-                "[concat('Microsoft.Network/networkInterfaces/',variables('nicname'))]"
+                "[concat('Microsoft.Network/loadBalancers/', variables('lbName'))]"
             ],
-            "tags": {
-                "displayName": "[parameters('vmname')]"
+            "sku":{
+                "name": "[parameters('vmSku')]",
+                "tier": "Standard",
+                "capacity": "[parameters('instanceCount')]"
             },
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "Standard_A2"
+            "properties":{
+                "overprovision": true,
+                "upgradePolicy":{
+                    "mode": "Manual"
                 },
-                "osProfile": {
-                    "computerName": "[parameters('vmname')]",
-                    "adminUsername": "ADMIN_USERNAME",
-                    "adminPassword": "ADMIN_PASSWORD"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "MicrosoftWindowsServer",
-                        "offer": "WindowsServer",
-                        "sku": "2012-R2-Datacenter",
-                        "version": "latest"
-                    },
-                    "osDisk": {
-                        "name": "WindowsVM1OSDisk",
-                        "caching": "ReadWrite",
-                        "createOption": "FromImage"
-                    }
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicname'))]"
-                        }
-                    ]
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": true,
-                        "storageUri": "[concat('http://', variables('storageacctname') , '.blob.core.windows.net')]"
-                    }
-                }
-            },
-            "resources": [
-                {
-                    "type": "extensions",
-                    "name": "[concat(parameters('vmname'),'AzureDiagnostics')]",
-                    "apiVersion": "2017-03-30",
-                    "location": "[concat(parameters('vmname'),'AzureDiagnostics')]",
-                    "tags": {
-                        "displayName": "WindowsVM1AzureDiagnostics"
-                    },
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/',parameters('vmname'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Azure.Diagnostics",
-                        "type": "IaaSDiagnostics",
-                        "typeHandlerVersion": "1.5",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "xmlCfg": "[base64('<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http: //schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/> <Logs scheduledTransferPeriod=\"PT1M\" scheduledTransferLogLevelFilter=\"Error\" /> <Directories scheduledTransferPeriod=\"PT1M\"> <IISLogs containerName =\"wad-iis-logfiles\" /> <FailedRequestLogs containerName =\"wad-failedrequestlogs\" /> </Directories> <WindowsEventLog scheduledTransferPeriod=\"PT1M\" > <DataSource name=\"Application!*\" /> </WindowsEventLog> <CrashDumps containerName=\"wad-crashdumps\" dumpType=\"Mini\"> <CrashDumpConfiguration processName=\"WaIISHost.exe\"/> <CrashDumpConfiguration processName=\"WaWorkerHost.exe\"/> <CrashDumpConfiguration processName=\"w3wp.exe\"/> </CrashDumps> <PerformanceCounters scheduledTransferPeriod=\"PT1M\"> <PerformanceCounterConfiguration counterSpecifier=\"\\Memory\\Available MBytes\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\Web Service(_Total)\\ISAPI Extension Requests/sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\Web Service(_Total)\\Bytes Total/Sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET Applications(__Total__)\\Requests/Sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET Applications(__Total__)\\Errors Total/Sec\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET\\Requests Queued\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\ASP.NET\\Requests Rejected\" sampleRate=\"PT3M\" /> <PerformanceCounterConfiguration counterSpecifier=\"\\Processor(_Total)\\% Processor Time\" sampleRate=\"PT3M\" /> </PerformanceCounters> </DiagnosticMonitorConfiguration> </WadCfg>')]",
-                            "storageAccount": "[variables('storageacctname')]"
+                "virtualMachineProfile":{
+                    "storageProfile":{
+                        "osDisk":{
+                            "createOption": "FromImage",
+                            "caching": "ReadWrite"
                         },
-                        "protectedSettings": {
-                            "storageAccountName": "[variables('storageacctname')]",
-                            "storageAccountKey": "[listkeys(concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Storage/storageAccounts/', toLower('WindowsVM1storage')), '2015-06-15').key1]",
-                            "storageAccountEndPoint": "https://core.windows.net"
+                        "imageReference": "[variables('imageReference')]"
+                    },
+                    "osProfile":{
+                        "computerNamePrefix": "[concat(parameters('projectName'),'-IIS')]",
+                        "adminUsername": "[parameters('vmAdminUser')]",
+                        "adminPassword": "[parameters('vmAdminPasswd')]"
+                    },
+                    "networkProfile":{
+                        "networkInterfaceConfigurations":[
+                            {
+                                "name": "[variables('nicname')]",
+                                "properties":{
+                                    "primary":true,
+                                    "ipConfigurations":[
+                                        {
+                                            "name": "[variables('ipConfigName')]",
+                                            "properties":{
+                                                "subnet":{
+                                                    "id": "[parameters('subnetRef')]"
+                                                },
+                                                "loadBalancerBackendAddressPools":[
+                                                    {
+                                                        "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('lBName'), '/backendAddressPools/', variables('bePoolName'))]"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]   
+                    },
+                    "extensionProfile":{
+                      "extensions":[
+                        {
+                            "name": "Microsoft.Powershell.DSC",
+                            "properties":{
+                                "publisher": "Microsoft.Powershell",
+                                "type": "DSC",
+                                "typeHandlerVersion": "2.9",
+                                "autoUpgradeMinorVersion": true,
+                                "forceUpdateTag": "1.0",
+                                "settings":{
+                                    "configuration":{
+                                        "url": "[variables('iisInstallURI')]",
+                                        "script": "[variables('iisFile')]",
+                                        "function": "InstallIIS"
+                                    },
+                                    "configurationArguments":{
+                                        "nodename": "localhost",
+                                        "WebDeployPackagePath": "[parameters('webDeployPackageURI')]"
+                                    }
+                                }
+                            }
+
+                            
+                        },
+                        {
+                            "name": "joindomain",
+                            "properties":{
+                                "publisher": "Microsoft.Compute",
+                                "type": "JsonADDomainExtension",
+                                "typeHandlerVersion": "1.3",
+                                "settings":{
+                                    "name": "[parameters('domainName')]",
+                                    "OUPath": "[parameters('ouPath')]",
+                                    "User": "[parameters('domainUserName')]",
+                                    "restart": true,
+                                    "options": 3
+                                    
+                                },
+                                "protectedSettings":{
+                                    "Password": "[parameters('domainJoinPassword')]"
+                                }
+                            }
                         }
+                      ]  
                     }
-                }
-            ]
-        },
-        {
-            "apiVersion": "2017-10-01",
-            "name": "[concat(parameters('projectName'),'PowerBIEmbedded')]",
-            "location": "[resourceGroup().location]",
-            "type": "Microsoft.PowerBIDedicated/capacities",
-            "sku": {
-                "name": "[parameters('sku')]"
-            },
-            "properties": {
-                "administration": {
-                    "members": [
-                        "[parameters('biebeddedadmin')]"
-                    ]
                 }
             }
-        }
+        
+        }, 
+        {
+            "type": "Microsoft.Insights/autoscaleSettings",
+            "apiVersion": "2015-04-01",
+            "name": "cpuautoscale",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+              "[concat('Microsoft.Compute/virtualMachineScaleSets/', variables('scalesetName'))]"
+            ],
+            "properties": {
+              "name": "cpuautoscale",
+              "targetResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', variables('scalesetName'))]",
+              "enabled": true,
+              "profiles": [
+                {
+                  "name": "Profile1",
+                  "capacity": {
+                    "minimum": "1",
+                    "maximum": "10",
+                    "default": "1"
+                  },
+                  "rules": [
+                    {
+                      "metricTrigger": {
+                        "metricName": "Percentage CPU",
+                        "metricNamespace": "",
+                        "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', variables('scalesetName'))]",
+                        "timeGrain": "PT1M",
+                        "statistic": "Average",
+                        "timeWindow": "PT5M",
+                        "timeAggregation": "Average",
+                        "operator": "GreaterThan",
+                        "threshold": 50
+                      },
+                      "scaleAction": {
+                        "direction": "Increase",
+                        "type": "ChangeCount",
+                        "value": "1",
+                        "cooldown": "PT5M"
+                      }
+                    },
+                    {
+                      "metricTrigger": {
+                        "metricName": "Percentage CPU",
+                        "metricNamespace": "",
+                        "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId, '/resourceGroups/',  resourceGroup().name, '/providers/Microsoft.Compute/virtualMachineScaleSets/', variables('scalesetName'))]",
+                        "timeGrain": "PT1M",
+                        "statistic": "Average",
+                        "timeWindow": "PT5M",
+                        "timeAggregation": "Average",
+                        "operator": "LessThan",
+                        "threshold": 30
+                      },
+                      "scaleAction": {
+                        "direction": "Decrease",
+                        "type": "ChangeCount",
+                        "value": "1",
+                        "cooldown": "PT5M"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+
     ],
     "outputs": {}
 }

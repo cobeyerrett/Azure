@@ -9,13 +9,10 @@
             "value": "cb7dd612-f7db-4690-936a-2c77addefe26"
         },
         "projectName":{
-            "value": "PSES"
+            "value": "pses2"
         },
         "vmname":{
-            "value": "PSES"
-        },
-        "vmadmin":{
-            "value": "cloudadmin"
+            "value": "pses2"
         },
         "subnetRef":{
             "value": "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8/resourceGroups/network-Innovation-rg/providers/Microsoft.Network/virtualNetworks/Innovation-VNet/subnets/FrontInn"
@@ -25,6 +22,21 @@
         },
         "biebeddedadmin":{
             "value": "cobey.errett@cloud.statcan.ca"
+        },
+        "instanceCount":{
+            "value": 1
+        },
+        "webDeployPackageURI":{
+            "value": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vmss-windows-webapp-dsc-autoscale/WebDeploy/DefaultASPWebApp.v1.0.zip"
+        },
+        "domainName":{
+            "value": "cloud.statcan.ca"
+        },
+        "ouPath":{
+            "value": "ou=AADDC Computers,dc=cloud,dc=statcan,dc=ca"
+        },
+        "domainUsername":{
+            "value": "cloud.statcan.ca\\cobey.errett"
         }
       
     }
