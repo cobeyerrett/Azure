@@ -7,9 +7,18 @@
         },
         "subnetRef":{
             "type": "string"
+        },
+        "vmSize":{
+            "type": "string",
+            "allowedValues": [
+                "Standard_A1",
+                "Standard_A2"
+            ]
         }
     },
-    "variables": {},
+    "variables": {
+        "nicName": "[tolower('nic')]"
+    },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -99,7 +108,7 @@
                 {
                     "type": "extensions",
                     "name": "WindowsVM1AzureDiagnostics",
-                    "apiVersion": "2015-06-15",
+                    "apiVersion": "2017-03-30",
                     "location": "[resourceGroup().location]",
                     "tags": {
                         "displayName": "WindowsVM1AzureDiagnostics"
