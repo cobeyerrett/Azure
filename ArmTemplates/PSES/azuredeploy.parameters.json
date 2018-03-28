@@ -9,10 +9,10 @@
             "value": "cb7dd612-f7db-4690-936a-2c77addefe26"
         },
         "projectName":{
-            "value": "pses2"
+            "value": "pses"
         },
         "vmname":{
-            "value": "pses2"
+            "value": "pses"
         },
         "subnetRef":{
             "value": "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8/resourceGroups/network-Innovation-rg/providers/Microsoft.Network/virtualNetworks/Innovation-VNet/subnets/FrontInn"

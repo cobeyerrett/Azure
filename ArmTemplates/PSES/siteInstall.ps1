@@ -7,5 +7,5 @@ $hostName = "hranalytics-analytiquerh.cloud.statcan.ca"
 $SiteFolder = Join-Path -Path $directoryPath -ChildPath $iisAppName
 
 New-WebSite -Name $iisAppName -PhysicalPath $SiteFolder -Force
-$iisSite = "IIS:\Sites\$SiteName"
+$iisSite = "IIS:\Sites\$iisAppName"
 Set-ItemProperty $iisSite -Name Bindings -value @{protocol="http";bindingInformation="*:80:$HostName"}
