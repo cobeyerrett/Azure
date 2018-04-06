@@ -42,7 +42,6 @@
         },
         "vmSku": {
             "type": "string",
-            "defaultValue": "Standard_D4s_v3",
             "metadata": {
                 "description": "Size of VMs in the VM Scale Set"
             }
@@ -78,6 +77,9 @@
         "webDeployPackageURI":{
             "type": "string"
         },
+        "powershelldscUpdateTagVersion":{
+            "type": "string"
+        },
         "domainName":{
             "type": "string"
         },
@@ -93,7 +95,6 @@
     },
     "variables": {
         "keyvaultname" : "[concat(parameters('projectName'),uniqueString(resourceGroup().id))]",
-        "storageacctname": "[toLower(concat(parameters('vmname'),uniqueString(resourceGroup().id)))]",
         "nicname": "[concat(parameters('vmname'),'nic')]",
         "lbName": "[concat(parameters('projectName'), '-lb')]",
         "lbFrontEnd": "LoadBalancerFrontEnd",
@@ -101,9 +102,10 @@
         "bePoolName": "[concat(parameters('projectName'),'-bePool')]",
         "natPoolName": "[concat(parameters('projectName'),'-natpool')]",
         "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/loadBalancerFrontEnd')]",
+        "backEndPoolID": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(variables('lbName'))), '/backendAddressPools/',variables('bePoolName'))]" ,
+        "healthProbeID": "[concat(variables('lbID'),'/Probes/',parameters('projectName'))]",
         "natStartPort": 50000,
         "natEndPort": 50119,
-        "natBackendPort": 3389,
         "scalesetName": "[concat(parameters('projectName'),'-ss')]",
         "osType": {
             "publisher": "MicrosoftWindowsServer",
@@ -113,7 +115,7 @@
         },
         "imageReference": "[variables('osType')]",
         "ipConfigName": "[concat(parameters('projectName'),'ipconfig')]",
-        "iisInstallURI": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vmss-windows-webapp-dsc-autoscale/DSC/IISInstall.ps1.zip",
+        "iisInstallURI": "https://github.com/cobeyerrett/Azure/raw/development/ArmTemplates/PSES/IISInstall.ps1.zip",
         "iisFile": "IISInstall.ps1"
         
     },
@@ -198,7 +200,13 @@
                         "name": "[parameters('projectName')]",
                         "properties":{
                             "frontendIPConfiguration": {
-                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers', concat(variables('lbName'))), '/frontendIpConfigurations/',variables('lbFrontEnd'))]"
+                                "id": "[variables('frontEndIPConfigID')]"
+                            },
+                            "backendAddressPool":{
+                                "id": "[variables('backEndPoolID')]"
+                            },
+                            "probe":{
+                              "id": "[variables('healthProbeID')]"  
                             },
                             "protocol":"Tcp",
                             "loadDistribution":"Default",
@@ -226,28 +234,18 @@
                     {
                         "name": "[variables('natPoolName')]",
                         "properties":{
-                            "frontendIPConfiguration": {
+                            "frontendIPConfiguration":{ 
                                 "id": "[variables('frontEndIPConfigID')]"
                             },
-                            "protocol": "Tcp",
-                            "frontendPortRangeStart": "[variables('natStartPort')]",
+
+                            "protocol":"Tcp",
                             "frontendPortRangeEnd": "[variables('natEndPort')]",
-                            "backendPort":"[variables('natBackendPort')]"
+                            "frontendPortRangeStart": "[variables('natStartPort')]",
+                            "backendPort": "[variables('natEndPort')]"
+
                         }
                     }
                 ]
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('storageacctname')]",
-            "apiVersion": "2015-06-15",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "[concat(parameters('vmname'),' Storage Account')]"
-            },
-            "properties": {
-                "accountType": "Standard_LRS"
             }
         },
         {
@@ -266,7 +264,12 @@
             "properties":{
                 "overprovision": true,
                 "upgradePolicy":{
-                    "mode": "Manual"
+                    "mode": "Automatic",
+                    "rollingUpgradePolicy":{
+                        "maxBatchInstancePercent": 50,
+                        "maxUnhealthyInstancePercent": 50,
+                        "maxUnhealthyUpgradedInstancePercent": 75
+                    }
                 },
                 "virtualMachineProfile":{
                     "storageProfile":{
@@ -309,13 +312,13 @@
                     "extensionProfile":{
                       "extensions":[
                         {
-                            "name": "Microsoft.Powershell.DSC",
+                            "name": "[concat(parameters('projectName'),'-webapp')]",
                             "properties":{
                                 "publisher": "Microsoft.Powershell",
                                 "type": "DSC",
                                 "typeHandlerVersion": "2.9",
                                 "autoUpgradeMinorVersion": true,
-                                "forceUpdateTag": "1.0",
+                                "forceUpdateTag": "[parameters('powershelldscUpdateTagVersion')]",
                                 "settings":{
                                     "configuration":{
                                         "url": "[variables('iisInstallURI')]",

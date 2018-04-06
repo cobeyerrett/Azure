@@ -14,6 +14,9 @@
         "vmname":{
             "value": "pses"
         },
+        "vmsku":{
+            "value": "Standard_D4s_v3"
+        },
         "subnetRef":{
             "value": "/subscriptions/12bccb87-89b1-48e5-a569-9250c2a435e8/resourceGroups/network-Innovation-rg/providers/Microsoft.Network/virtualNetworks/Innovation-VNet/subnets/FrontInn"
         },
@@ -24,10 +27,13 @@
             "value": "cobey.errett@cloud.statcan.ca"
         },
         "instanceCount":{
-            "value": 1
+            "value": 2
         },
         "webDeployPackageURI":{
-            "value": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/201-vmss-windows-webapp-dsc-autoscale/WebDeploy/DefaultASPWebApp.v1.0.zip"
+            "value": "https://github.com/cobeyerrett/Azure/raw/development/ArmTemplates/PSES/PowerBIEmbedded_AppOwnsData.zip"
+        },
+        "powershelldscUpdateTagVersion":{
+            "value": "1.0"
         },
         "domainName":{
             "value": "cloud.statcan.ca"
