@@ -34,6 +34,9 @@
         "HybridSubnetID":{
             "type": "string",
             "defaultValue": "/subscriptions/2c694414-1af6-45ba-82ba-edb9acf344b0/resourceGroups/network-Workstations-rg/providers/Microsoft.Network/virtualNetworks/DevWS-VNet/subnets/Hybrid"
+        },
+        "GitToken":{
+            "type": "securestring"
         }
 
     },
@@ -63,10 +66,10 @@
             "scale": null,
             "properties": {
                 "displayName": "Statcan Repo",
-                "uri": "https://github.com/govcloud/azure-devtestlab.git",
+                "uri": "https://github.com/sylus/azure-devtestlab.git",
                 "sourceType": "GitHub",
                 "folderPath": "/Artifacts",
-                "securityToken": "dc20bb373ddce634c82046e37d357ee47f22f0d6",
+                "securityToken": "[parameters('gittoken')]",
                 "branchRef": "master",
                 "status": "Enabled"
             },
