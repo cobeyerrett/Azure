@@ -1,0 +1,177 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "BillTo":{
+            "type": "string"
+        },
+        "ProjectName":{
+            "type": "string"
+        },
+        "ProjectOwner":{
+            "type": "string"
+        },
+        "DTLName":{
+            "defaultValue": "[concat(parameters('ProjectName'),'DTL')]",
+            "type": "string"
+        },
+        "VNetName":{
+            "type": "string",
+            "defaultValue": "devws-vnet"
+        },
+        "VNetID":{
+            "type": "string",
+            "defaultValue": "/subscriptions/2c694414-1af6-45ba-82ba-edb9acf344b0/resourceGroups/network-Workstations-rg/providers/Microsoft.Network/virtualNetworks/DevWS-VNet"
+        },
+        "OperatorSubnetID":{
+            "type": "string",
+            "defaultValue": "/subscriptions/2c694414-1af6-45ba-82ba-edb9acf344b0/resourceGroups/network-Workstations-rg/providers/Microsoft.Network/virtualNetworks/DevWS-VNet/subnets/Operator"
+        },
+        "DevelopSubnetID":{
+            "type": "string",
+            "defaultValue": "/subscriptions/2c694414-1af6-45ba-82ba-edb9acf344b0/resourceGroups/network-Workstations-rg/providers/Microsoft.Network/virtualNetworks/DevWS-VNet/subnets/Developer"
+        },
+        "HybridSubnetID":{
+            "type": "string",
+            "defaultValue": "/subscriptions/2c694414-1af6-45ba-82ba-edb9acf344b0/resourceGroups/network-Workstations-rg/providers/Microsoft.Network/virtualNetworks/DevWS-VNet/subnets/Hybrid"
+        }
+
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('DTLName')]",
+            "type": "Microsoft.DevTestLab/labs",
+            "apiVersion": "2016-05-15",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "Billto": "[parameters('BillTo')]",
+                "ProjectName": "[parameters('ProjectName')]",
+                "ProjectOwner": "[parameters('ProjectOwner')]"
+            },
+            "properties":{
+                "premiumDataDisks":"Enabled",
+                "labStorageType":"Standard"
+            }
+        },
+        {
+            "comments": "Statcan Public Repo",
+            "type": "Microsoft.DevTestLab/labs/artifactsources",
+            "name": "[concat(parameters('DTLName'),'/Artifacts')]",
+            "apiVersion": "2016-05-15",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "displayName": "Statcan Repo",
+                "uri": "https://github.com/govcloud/azure-devtestlab.git",
+                "sourceType": "GitHub",
+                "folderPath": "/Artifacts",
+                "securityToken": "dc20bb373ddce634c82046e37d357ee47f22f0d6",
+                "branchRef": "master",
+                "status": "Enabled"
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
+            ]
+        },
+       
+        {
+            "comments": "Virtual Network for the DevTestLab",
+            "name": "[concat(parameters('DTLName'),'/',parameters('VNetName'))]",
+            "type": "Microsoft.DevTestLab/labs/virtualnetworks",
+            "apiVersion": "2016-05-15",
+            "location": "[resourceGroup().location]",
+            "properties":{
+                "allowedSubnets":[
+                    {
+                        "resourceId": "[parameters('OperatorSubnetID')]",
+                        "labSubnetName": "Operator",
+                        "allowPublicIp":"Deny"
+                    },
+                    {
+                        "resourceId": "[parameters('DevelopSubnetID')]",
+                        "labSubnetName": "Developer",
+                        "allowPublicIp": "Deny"
+                    },
+                    {
+                        "resourceId": "[parameters('HybridSubnetID')]",
+                        "labSubnetName": "Hybrid",
+                        "allowPublicIp":"Deny"
+                    }
+                ],
+                "externalProviderResourceId": "[parameters('VNetID')]",
+                "subnetOverrides":[
+                    {
+                        "resourceId": "[parameters('OperatorSubnetID')]",
+                        "labSubnetName": "Operator",
+                        "useInVmCreationPermission":"Deny",
+                        "usePublicIpAddressPermission":"Deny"
+                    },
+                    {
+                        "resourceId": "[parameters('DevelopSubnetID')]",
+                        "labSubnetName": "Developer",
+                        "useInVmCreationPermission":"Allow",
+                        "usePublicIpAddressPermission":"Deny"
+                    },
+                    {
+                        "resourceId": "[parameters('HybridSubnetID')]",
+                        "labSubnetName": "Hybrid",
+                        "useInVmCreationPermission":"Deny",
+                        "usePublicIpAddressPermission":"Deny"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
+            ]
+
+        },
+        {
+            "comments": "Schedules",
+            "type": "Microsoft.DevTestLab/labs/schedules",
+            "apiVersion": "2016-05-15",
+            "location": "[resourceGroup().location]",
+            "name": "[concat(parameters('DTLName'),'/LabVmsShutdown')]",
+            "properties":{
+                "timeZoneId": "Eastern Standard Time",
+                "status":"Enabled",
+                "taskType": "LabVmsShutdownTask",
+                "dailyRecurrence":{
+                    "time": "1900"
+                },
+                "notificationSettings":{
+                    "status":"Disabled"
+                } 
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
+            ]
+        },
+        {
+            "comments": "Public Repo",
+            "type": "Microsoft.DevTestLab/labs/artifactsources",
+            "name": "[concat(parameters('DTLName'), '/Public Repo')]",
+            "apiVersion": "2016-05-15",
+            "scale": null,
+            "properties": {
+                "displayName": "[concat('Public Repo')]",
+                "uri": "https://github.com/Azure/azure-devtestlab.git",
+                "sourceType": "GitHub",
+                "folderPath": "/Artifacts",
+                "branchRef": "master",
+                "status": "Disabled",
+                "provisioningState": "Succeeded",
+                "uniqueIdentifier": "00000000-0000-0000-0000-000000000000"
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
+            ]
+        }
+    ],
+    "outputs": {
+        "labID":{
+            "type": "string",
+            "value": "[resourceId('Microsoft.DevTestLab/labs',parameters('DTLName'))]"
+        }
+    }
+}
