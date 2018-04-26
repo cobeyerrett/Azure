@@ -70,7 +70,7 @@
                 "sourceType": "GitHub",
                 "folderPath": "/Artifacts",
                 "securityToken": "[parameters('gittoken')]",
-                "branchRef": "master",
+                "branchRef": "statcan",
                 "status": "Enabled"
             },
             "dependsOn": [
