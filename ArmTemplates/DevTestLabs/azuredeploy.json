@@ -161,7 +161,7 @@
                 "uri": "https://github.com/Azure/azure-devtestlab.git",
                 "sourceType": "GitHub",
                 "folderPath": "/Artifacts",
-                "branchRef": "master",
+                "branchRef": "statcan",
                 "status": "Disabled",
                 "provisioningState": "Succeeded",
                 "uniqueIdentifier": "00000000-0000-0000-0000-000000000000"
