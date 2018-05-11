@@ -37,6 +37,14 @@
         },
         "GitToken":{
             "type": "securestring"
+        },
+        "allowedVmSizes": {
+            "type": "string",
+            "defaultValue": "\"Standard_D2_v3\", \"Standard_D4_v3\", \"Standard_D2s_v3\",\"Standard_D4s_v3\"",
+            "minLength": 3,
+            "metadata": {
+              "description": "A comma-separated list of VM sizes that are allowed in the lab."
+            }
         }
 
     },
@@ -128,6 +136,23 @@
                 "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
             ]
 
+        },
+        {
+            "name": "string",
+            "type": "Microsoft.DevTestLab/labs/policysets/policies",
+            "apiVersion": "2016-05-15",
+            "location": "string",
+            "tags": {},
+            "properties": {
+              "description": "Allowed VM Size",
+              "status": "Enabled",
+              "factName": "LabVmSize",
+              "threshold": "[concat('[', trim(parameters('allowedVmSizes')), ']')]",
+              "evaluatorType": "AllowedValuesPolicy"
+            },
+            "dependsOn": [
+                "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
+            ]
         },
         {
             "comments": "Schedules",
