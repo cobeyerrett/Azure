@@ -138,21 +138,19 @@
 
         },
         {
-            "name": "string",
+            "name": "[concat(parameters('DTLName'),'/labs/AllowedVmSizesInLab')]",
             "type": "Microsoft.DevTestLab/labs/policysets/policies",
             "apiVersion": "2016-05-15",
-            "location": "string",
-            "tags": {},
+            "dependsOn": [
+                "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
+            ],
             "properties": {
               "description": "Allowed VM Size",
               "status": "Enabled",
               "factName": "LabVmSize",
               "threshold": "[concat('[', trim(parameters('allowedVmSizes')), ']')]",
               "evaluatorType": "AllowedValuesPolicy"
-            },
-            "dependsOn": [
-                "[resourceId('microsoft.devtestlab/labs', parameters('DTLName'))]"
-            ]
+            }
         },
         {
             "comments": "Schedules",
